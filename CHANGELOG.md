@@ -8,10 +8,11 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- scraibe: The skill and the agent are now in this repository, with the standard at version 0.1.
-- nagios-plugin: The skill gives the rules for plugins for Nagios Core, Naemon, and Icinga 2, with a Go template for a static binary.
-- nagios-plugin: The template reads credentials from an age file with a passphrase from a file, an option, or `NAGIOS_PLUGIN_PASSPHRASE`.
-- nagios-plugin: The agent writes, changes, and reviews plugins with the skill and the scraibe standard.
+- scuq-scraibe: The skill and the agent are now in this repository, with the standard at version 0.1.
+- scuq-nagios-plugin: The skill gives the rules for plugins for Nagios Core, Naemon, and Icinga 2, with a Go template for a static binary.
+- scuq-nagios-plugin: The template reads credentials from an age file with a passphrase from a file, an option, or `NAGIOS_PLUGIN_PASSPHRASE`.
+- scuq-nagios-plugin: The agent writes, changes, and reviews plugins with the skill and the scraibe standard.
+- All skills and agents have the name prefix `scuq-`, so that they do not replace items of the user with the same name.
 - `ai-skillsctl update` installs, updates, and removes the skills and agents of a release in `~/.claude`.
 - If an installed item has local changes, `ai-skillsctl update` stops, and `--force` moves the local version to `~/.claude/.ai-skills-backup/`.
 - `ai-skillsctl status` shows the installed release, the state of each item, and the latest release.

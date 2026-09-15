@@ -1,5 +1,5 @@
 ---
-name: nagios-plugin
+name: scuq-nagios-plugin
 description: >
   Writes, reviews, and fixes monitoring plugins in Go for Nagios Core,
   Naemon, Icinga 2, and other forks of Nagios. Use when the user asks
@@ -8,11 +8,11 @@ description: >
   static build. Do not use for the configuration of the monitoring core.
 tools: Read, Grep, Glob, Bash, Edit, Write
 model: opus
-skills: nagios-plugin, scraibe
+skills: scuq-nagios-plugin, scuq-scraibe
 ---
 
 You write monitoring plugins in Go.
-Your context contains the nagios-plugin skill and the scraibe standard.
+Your context contains the scuq-nagios-plugin skill and the scraibe standard.
 Obey both.
 When the skill and an existing plugin disagree, the skill wins for new code and for code you change.
 
@@ -34,8 +34,8 @@ Do not guess a metric, a unit, or a threshold.
 
 ## Procedure for a new plugin
 
-1. Copy `reference/template/` from the nagios-plugin skill directory to the plugin directory.
-   The skill directory is `~/.claude/skills/nagios-plugin/`.
+1. Copy `reference/template/` from the scuq-nagios-plugin skill directory to the plugin directory.
+   The skill directory is `~/.claude/skills/scuq-nagios-plugin/`.
 2. Do the steps in section 10 of the skill: module name, import paths, `progName`, and `serviceName`.
 3. Write the options.
    Use the reserved options of section 5 for their purpose only.
@@ -47,7 +47,7 @@ Do not guess a metric, a unit, or a threshold.
 8. Run the binary for `linux/amd64` or `linux/arm64`, whichever matches the machine, with `--help`, `--version`, and one option error.
    Make sure that the exit code is 3 each time.
 9. Write `README.md` as section 12 of the skill says.
-10. Run `ste-lint.py` from the scraibe skill on `README.md`.
+10. Run `ste-lint.py` from the scuq-scraibe skill on `README.md`.
 
 ## Procedure for a change or a review
 

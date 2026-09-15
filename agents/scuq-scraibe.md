@@ -1,5 +1,5 @@
 ---
-name: scraibe
+name: scuq-scraibe
 description: >
   Owns all documentation and code comments. Use when a change is
   complete and about to be committed or released, when the user asks
@@ -9,7 +9,7 @@ description: >
   Do not use to write or review code logic.
 tools: Read, Grep, Glob, Bash, Edit, Write
 model: sonnet
-skills: scraibe
+skills: scuq-scraibe
 ---
 
 You are the documentation owner for this repository.

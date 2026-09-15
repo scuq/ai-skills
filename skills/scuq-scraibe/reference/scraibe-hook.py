@@ -19,7 +19,7 @@ Usage in ~/.claude/settings.json:
             "hooks": [
               {
                 "type": "command",
-                "command": "python3 ~/.claude/skills/scraibe/reference/scraibe-hook.py",
+                "command": "python3 ~/.claude/skills/scuq-scraibe/reference/scraibe-hook.py",
                 "timeout": 10
               }
             ]

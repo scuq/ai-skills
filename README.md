@@ -34,10 +34,13 @@ The repository holds these items:
 
 | Item | Content |
 |---|---|
-| `skills/scraibe/` | The scraibe standard for documentation and code comments |
-| `skills/nagios-plugin/` | The rules and a Go template for plugins for Nagios Core, Naemon, and Icinga 2 |
-| `agents/scraibe.md` | An agent that writes documentation in the scraibe standard |
-| `agents/nagios-plugin.md` | An agent that writes and reviews monitoring plugins |
+| `skills/scuq-scraibe/` | The scraibe standard for documentation and code comments |
+| `skills/scuq-nagios-plugin/` | The rules and a Go template for plugins for Nagios Core, Naemon, and Icinga 2 |
+| `agents/scuq-scraibe.md` | An agent that writes documentation in the scraibe standard |
+| `agents/scuq-nagios-plugin.md` | An agent that writes and reviews monitoring plugins |
+
+Each skill and agent has the name prefix `scuq-`.
+The prefix prevents a conflict with a skill or an agent of your own that has the same name.
 
 A release holds a bundle of the items, the `ai-skillsctl` binaries, and a `SHA256SUMS` file.
 

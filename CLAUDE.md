@@ -10,7 +10,7 @@ You develop, test, and document them here.
 - `agents/<name>.md`: One agent per file.
 - `cmd/ai-skillsctl/`: The installer command.
 - `internal/`: The Go packages of the installer.
-- `scripts/test.sh`: Runs gofmt, go vet, and go test for each Go module.
+- `scripts/test.sh`: Checks the item names, and runs gofmt, go vet, and go test for each Go module.
 - `scripts/build-release.sh`: Builds the release assets in `dist/`.
 - `scripts/release-notes.sh`: Prints the `CHANGELOG.md` section of one version.
 - `.github/workflows/`: The CI workflow and the release workflow.
@@ -32,8 +32,11 @@ You develop, test, and document them here.
 
 ## Skills and agents
 
+- Start the name of each skill and agent with `scuq-`, for example `scuq-scraibe`.
+  Without the prefix, an item can replace a skill or an agent of a user with the same name.
 - Use the directory name of a skill as the `name` in its `SKILL.md` frontmatter.
 - Use the file name of an agent as the `name` in its frontmatter.
+- In the `skills` field of an agent, use the full names with the prefix.
 - In a skill, refer to its own files with a relative path, for example `reference/ste-lint.py`.
 - Refer to an installed skill with the path `~/.claude/skills/<name>/`.
 - Do not put a secret, a real hostname, or a personal name in a skill or an agent.
@@ -41,7 +44,7 @@ You develop, test, and document them here.
 
 ## Go code
 
-- Run `scripts/test.sh` after each change to Go code.
+- Run `scripts/test.sh` after each change to Go code, to a skill name, or to an agent name.
 - Build with `CGO_ENABLED=0`.
   Do not add a dependency that needs cgo.
 - `ai-skillsctl` uses only the Go standard library.
@@ -49,16 +52,17 @@ You develop, test, and document them here.
 - Add a test for each change to the behavior of `ai-skillsctl`.
 - If you change a command, an option, or an exit code, update `README.md`.
 
-## The scraibe skill and agent
+## The scuq-scraibe skill and agent
 
-The source of the scraibe skill is `skills/scraibe/`.
-The source of the scraibe agent is `agents/scraibe.md`.
+The source of the skill is `skills/scuq-scraibe/`.
+The source of the agent is `agents/scuq-scraibe.md`.
 Claude Code loads the installed copies from `~/.claude/`, not the copies in this repository.
 
-- To write documentation in this repository, use the installed scraibe skill and agent.
-- To change the scraibe standard, edit `skills/scraibe/SKILL.md`.
-- The standard has its own version, for example `scraibe v0.1`.
-  If you change the rules of the standard, tell the user.
+- To write documentation in this repository, use the installed scuq-scraibe skill and agent.
+- To change the scraibe standard, edit `skills/scuq-scraibe/SKILL.md`.
+- The standard has its own name and version, for example `scraibe v0.1`.
+  The prefix does not apply to the name of the standard.
+- If you change the rules of the standard, tell the user.
   The user decides the new standard version.
 
 ## Features and phases
@@ -75,7 +79,7 @@ Claude Code loads the installed copies from `~/.claude/`, not the copies in this
 - Use the Keep a Changelog format.
 - Add new entries under `## [Unreleased]`.
 - Use only these groups: Added, Changed, Deprecated, Removed, Fixed, Security.
-- Name the skill or agent at the start of each entry, for example "scraibe: ".
+- Name the skill or agent at the start of each entry, for example "scuq-scraibe: ".
 
 ## Versions
 
@@ -99,7 +103,7 @@ Do these steps only when the user tells you to make a release.
 
 ## Documentation and comments
 
-- Load the `scraibe` skill before you write documentation or comments.
+- Load the `scuq-scraibe` skill before you write documentation or comments.
 - Apply the scraibe standard to all Markdown files, `SKILL.md` files, agent files, and code comments.
-- Run `ste-lint.py` from the installed scraibe skill on each Markdown file you change.
+- Run `ste-lint.py` from the installed scuq-scraibe skill on each Markdown file you change.
 - In your report, give the `Doc-Draft: scraibe/0.1` trailer for the user to add to the commit.

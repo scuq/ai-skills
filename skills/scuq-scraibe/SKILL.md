@@ -1,5 +1,5 @@
 ---
-name: scraibe
+name: scuq-scraibe
 description: >
   scraibe v0.1 — the writing standard for all documentation and code
   comments. Load when you write or review a README, docs/, CHANGELOG,

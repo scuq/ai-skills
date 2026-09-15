@@ -1,5 +1,5 @@
 ---
-name: nagios-plugin
+name: scuq-nagios-plugin
 description: >
   Rules and a Go template for monitoring plugins for Nagios Core, Naemon,
   Icinga 2, and other forks of Nagios. Load when you write, review, or
@@ -8,7 +8,7 @@ description: >
   static Go build.
 ---
 
-# nagios-plugin
+# scuq-nagios-plugin
 
 This skill gives the rules for a monitoring plugin and a Go template that obeys them.
 A plugin is a program that the monitoring core starts, reads from standard output, and judges by its exit code.
@@ -284,7 +284,7 @@ Tests do not need a network or a real service.
 ## 12. Documentation
 
 Each plugin has a `README.md` in the man-page structure of the scraibe standard.
-Load the scraibe skill before you write it.
+Load the scuq-scraibe skill before you write it.
 
 The README gives:
 

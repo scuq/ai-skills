@@ -8,13 +8,14 @@ Phase 1 sets up the repository for skill and agent development and distribution.
 |---|---|---|
 | `CLAUDE.md` | Gives the rules for Claude Code in this repository. | done |
 | `CHANGELOG.md` | Records the changes for each version. | done |
-| scraibe import | Makes this repository the source of the scraibe skill and agent. | done |
+| scuq-scraibe import | Makes this repository the source of the scuq-scraibe skill and agent. | done |
 | `VERSION` | Holds the release version. | done |
-| nagios-plugin skill | Gives the plugin API rules and a Go template for a static plugin binary. | done |
-| nagios-plugin agent | Writes, changes, and reviews plugins with the nagios-plugin skill. | done |
+| scuq-nagios-plugin skill | Gives the plugin API rules and a Go template for a static plugin binary. | done |
+| scuq-nagios-plugin agent | Writes, changes, and reviews plugins with the scuq-nagios-plugin skill. | done |
 | `ai-skillsctl` | Installs and updates the skills and agents of a release in `~/.claude`. | done |
 | Release workflow | Publishes the `ai-skillsctl` binaries and the skill bundle for a version tag. | done |
 | CI workflow | Tests the Go modules and lints the documentation on each branch push. | done |
+| `scuq-` name prefix | Prevents a conflict with a skill or an agent of the user with the same name. `scripts/test.sh` checks it. | done |
 | `scripts/sync-chezmoi.sh` | Copied the skills and agents into the chezmoi source directory. `ai-skillsctl` replaces it. | done |
 
 ## Distribution

@@ -28,7 +28,7 @@ type Manifest struct {
 	// Updated is the time of the last installation, in UTC.
 	Updated time.Time `json:"updated"`
 	// Items holds the hash of each installed item at installation time,
-	// by item path, for example "skills/scraibe".
+	// by item path, for example "skills/scuq-scraibe".
 	Items map[string]string `json:"items"`
 }
 
