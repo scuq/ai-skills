@@ -9,11 +9,15 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - scraibe: The skill and the agent are now in this repository, with the standard at version 0.1.
-- `scripts/sync-chezmoi.sh` copies the skills and agents into the chezmoi source directory.
-- `VERSION` holds the release version, and the sync script installs it as `~/.claude/.ai-skills-version`.
 - nagios-plugin: The skill gives the rules for plugins for Nagios Core, Naemon, and Icinga 2, with a Go template for a static binary.
 - nagios-plugin: The template reads credentials from an age file with a passphrase from a file, an option, or `NAGIOS_PLUGIN_PASSPHRASE`.
 - nagios-plugin: The agent writes, changes, and reviews plugins with the skill and the scraibe standard.
+- `ai-skillsctl update` installs, updates, and removes the skills and agents of a release in `~/.claude`.
+- If an installed item has local changes, `ai-skillsctl update` stops, and `--force` moves the local version to `~/.claude/.ai-skills-backup/`.
+- `ai-skillsctl status` shows the installed release, the state of each item, and the latest release.
+- `ai-skillsctl self-update` replaces the binary with the binary of a release.
+- A push of a tag `vMAJOR.MINOR.PATCH` publishes a GitHub release with static `ai-skillsctl` binaries for Linux and macOS, the skill bundle, and `SHA256SUMS`.
+- `VERSION` holds the release version.
 
 ## [0.0.1] - 2026-09-15
 

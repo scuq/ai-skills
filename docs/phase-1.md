@@ -1,6 +1,6 @@
 # Phase 1
 
-Phase 1 sets up the repository for skill and agent development.
+Phase 1 sets up the repository for skill and agent development and distribution.
 
 ## Features
 
@@ -9,19 +9,22 @@ Phase 1 sets up the repository for skill and agent development.
 | `CLAUDE.md` | Gives the rules for Claude Code in this repository. | done |
 | `CHANGELOG.md` | Records the changes for each version. | done |
 | scraibe import | Makes this repository the source of the scraibe skill and agent. | done |
-| `scripts/sync-chezmoi.sh` | Copies the skills and agents into the chezmoi source directory. | done |
-| `VERSION` | Holds the release version and shows the installed version on each computer. | done |
+| `VERSION` | Holds the release version. | done |
 | nagios-plugin skill | Gives the plugin API rules and a Go template for a static plugin binary. | done |
 | nagios-plugin agent | Writes, changes, and reviews plugins with the nagios-plugin skill. | done |
+| `ai-skillsctl` | Installs and updates the skills and agents of a release in `~/.claude`. | done |
+| Release workflow | Publishes the `ai-skillsctl` binaries and the skill bundle for a version tag. | done |
+| CI workflow | Tests the Go modules and lints the documentation on each branch push. | done |
+| `scripts/sync-chezmoi.sh` | Copied the skills and agents into the chezmoi source directory. `ai-skillsctl` replaces it. | done |
 
 ## Distribution
 
 This repository is the source.
-chezmoi distributes the skills and agents to each computer.
+GitHub releases distribute the skills and agents to each computer.
 
-1. `scripts/sync-chezmoi.sh` copies the files to the chezmoi source directory.
-2. `chezmoi apply` installs the files in `~/.claude/` on this computer.
-3. A commit and a push in the chezmoi repository publish the files.
-4. `chezmoi update` installs the files on the other computers.
+1. A push of a version tag starts the release workflow.
+2. The workflow publishes the `ai-skillsctl` binaries, `ai-skills-bundle.tar.gz`, and `SHA256SUMS`.
+3. On each computer, `ai-skillsctl update` installs the bundle in `~/.claude/`.
 
-Each computer shows the installed version in `~/.claude/.ai-skills-version`.
+chezmoi no longer distributes `~/.claude/skills/` and `~/.claude/agents/`.
+The chezmoi file `.chezmoiignore` excludes them.

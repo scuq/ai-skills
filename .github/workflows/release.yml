@@ -1,0 +1,37 @@
+# Build and publish a GitHub release when a version tag is pushed.
+name: release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: false
+
+      - name: Write the release notes
+        run: bash scripts/release-notes.sh "${GITHUB_REF_NAME#v}" > "$RUNNER_TEMP/notes.md"
+
+      - name: Test and build the release assets
+        run: bash scripts/build-release.sh "$GITHUB_REF_NAME"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          --title "$GITHUB_REF_NAME"
+          --notes-file "$RUNNER_TEMP/notes.md"
+          --verify-tag
+          dist/*
