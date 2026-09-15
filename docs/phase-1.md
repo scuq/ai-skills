@@ -11,6 +11,8 @@ Phase 1 sets up the repository for skill and agent development.
 | scraibe import | Makes this repository the source of the scraibe skill and agent. | done |
 | `scripts/sync-chezmoi.sh` | Copies the skills and agents into the chezmoi source directory. | done |
 | `VERSION` | Holds the release version and shows the installed version on each computer. | done |
+| nagios-plugin skill | Gives the plugin API rules and a Go template for a static plugin binary. | done |
+| nagios-plugin agent | Writes, changes, and reviews plugins with the nagios-plugin skill. | done |
 
 ## Distribution
 
