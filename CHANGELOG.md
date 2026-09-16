@@ -6,6 +6,8 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-16
+
 ### Added
 
 - scuq-scraibe: The skill and the agent are now in this repository, with the standard at version 0.1.
