@@ -1,0 +1,82 @@
+# Semantic registry. This file is the single source of truth for interface meaning.
+# Generate CSS tokens, enums, and internationalization keys from this file.
+# A component reads a semantic name only, for example status: warning.
+# A component never reads a raw color.
+
+meta:
+  app: example-app
+  criticality: C2            # C1 critical | C2 operational | C3 informational
+  owner: team-or-person
+  version: 1
+
+alert_levels:
+  warning:
+    meaning: Immediate operator action required.
+    response: Act now; follow linked runbook.
+    color: { token: sem-warning, light: "#B3261E", dark: "#F2B8B5" }
+    icon: octagon-alert
+    position: fixed-alert-bar
+    persistence: while-active
+    ack: required
+    audio: warning-tone        # or: none
+  caution:
+    meaning: Action required within defined time.
+    response: Investigate within 30 min.
+    color: { token: sem-caution, light: "#8A5A00", dark: "#FFD27A" }
+    icon: triangle-alert
+    position: fixed-alert-bar
+    persistence: while-active
+    ack: required
+    audio: none
+  advisory:
+    meaning: Awareness only.
+    response: none required
+    color: { token: sem-advisory, light: "#00658F", dark: "#8CCDFF" }
+    icon: circle-info-outline
+    position: inline
+    persistence: auto-clear
+    ack: optional
+    audio: none
+  unknown:
+    meaning: State cannot be determined (no data or stale data).
+    response: Check data source.
+    color: { token: sem-unknown, light: "#5F5F5F", dark: "#BDBDBD" }
+    pattern: hatched
+    icon: circle-question
+    position: inline
+    persistence: until-data-returns
+    ack: none
+    audio: none
+
+states:
+  # entity_type: { state: { meaning, alert_level, label } }
+  switch_port:
+    up:         { meaning: Link up and forwarding., alert_level: normal,  label: "Up" }
+    admin_down: { meaning: Disabled by operator.,   alert_level: advisory, label: "Admin down" }
+    down:       { meaning: Enabled but no link.,    alert_level: caution, label: "Down" }
+    err_disabled: { meaning: Disabled by device protection., alert_level: warning, label: "Err-disabled" }
+    unknown:    { meaning: Not polled or poll failed., alert_level: unknown, label: "Unknown" }
+
+staleness:
+  # data source: max age before state becomes STALE
+  snmp_poll: 5m
+  inventory_sync: 24h
+
+icons:
+  # icon: meaning   (one meaning per icon, one icon per meaning)
+  octagon-alert: warning level
+  triangle-alert: caution level
+  circle-info-outline: advisory level
+  circle-question: unknown / stale
+
+labels:
+  # canonical term: forbidden synonyms
+  "Down": ["offline", "dead", "unreachable"]
+  "Unknown": ["n/a", "-", "?"]
+
+deviations: []
+  # - rule: 3a
+  #   where: sparkline in overview tile
+  #   reason: no room for a label, value shown as text in an adjacent tooltip that needs no hover
+  #   approved_by: name
+  #   date: 2026-09-20

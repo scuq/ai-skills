@@ -36,8 +36,10 @@ The repository holds these items:
 |---|---|
 | `skills/scuq-scraibe/` | The scraibe standard for documentation and code comments |
 | `skills/scuq-nagios-plugin/` | The rules and a Go template for plugins for Nagios Core, Naemon, and Icinga 2 |
+| `skills/scuq-hmi-semantics/` | The rules for the meaning of a state, an alert, and a control in an operator interface |
 | `agents/scuq-scraibe.md` | An agent that writes documentation in the scraibe standard |
 | `agents/scuq-nagios-plugin.md` | An agent that writes and reviews monitoring plugins |
+| `agents/scuq-hmi-semantics.md` | An agent that builds and reviews operator interfaces |
 
 Each skill and agent has the name prefix `scuq-`.
 The prefix prevents a conflict with a skill or an agent of your own that has the same name.

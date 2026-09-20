@@ -12,6 +12,8 @@ Phase 1 sets up the repository for skill and agent development and distribution.
 | `VERSION` | Holds the release version. | done |
 | scuq-nagios-plugin skill | Gives the plugin API rules and a Go template for a static plugin binary. | done |
 | scuq-nagios-plugin agent | Writes, changes, and reviews plugins with the scuq-nagios-plugin skill. | done |
+| scuq-hmi-semantics skill | Gives the rules for the meaning of a state, an alert, and a control in an operator interface. | done |
+| scuq-hmi-semantics agent | Builds and reviews operator interfaces with the scuq-hmi-semantics skill. | done |
 | `ai-skillsctl` | Installs and updates the skills and agents of a release in `~/.claude`. | done |
 | Release workflow | Publishes the `ai-skillsctl` binaries and the skill bundle for a version tag. | done |
 | CI workflow | Tests the Go modules and lints the documentation on each branch push. | done |
