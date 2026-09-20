@@ -6,6 +6,8 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-20
+
 ### Added
 
 - scuq-hmi-semantics: The skill gives the rules for the meaning of a state, an alert level, and a control in an operator interface. It has a template for a semantic registry, an alert contract, and a review checklist.
