@@ -1,13 +1,13 @@
 ---
 name: scuq-scraibe
 description: >
-  scraibe v0.1 — the writing standard for all documentation and code
+  scraibe v0.2 — the writing standard for all documentation and code
   comments. Load when you write or review a README, docs/, CHANGELOG,
   man page, Go doc comment, Python docstring, .NET XML doc, Bash
   header, or inline comment.
 ---
 
-# scraibe v0.1
+# scraibe v0.2
 
 scraibe is one standard for all documentation and comments.
 The goal: short text, simple words, no missing facts.
@@ -170,6 +170,51 @@ Documentation names things, not people or organizations.
   organization's name (a config key, a function name, a path), you
   can write the identifier verbatim in a code span, because the code
   is the truth. Do not repeat the name in prose around it.
+
+## 2b. Word choice without the dictionary
+
+This standard does not contain the dictionary (section 11). When you
+must judge a word that is not in section 2, use these patterns. They
+come from an analysis of the 2198 entries of the Issue 9 dictionary.
+They are a direction, not a test (section 1a).
+
+1. Keep the part of speech. A verb becomes a verb, an adjective an
+   adjective. Four of five replacements in the dictionary do this.
+2. Choose the concrete word for this one meaning. The dictionary
+   spreads its replacements over more than 600 approved words. It
+   has no small set of general words. A word with several meanings
+   gets one replacement per meaning: "perform a test" becomes "do a
+   test", "perform a measurement" becomes "measure". Ask what
+   physically happens: put, move, remove, stop, start, attach, hold,
+   turn, show, tell, give, find.
+3. An action noun becomes its verb: "the absorption of moisture by
+   the gel" becomes "the gel absorbs the moisture". Nouns in -tion,
+   -ment, and -ance are the usual case.
+4. A tool used as a verb becomes a general verb and the tool: "bolt
+   the bracket" becomes "attach the bracket with bolts". A technical
+   noun is never a verb (STE rule 1.7).
+5. When no one word fits, build a phrase from approved words:
+   "exceed" becomes "more than", "excessive" becomes "too much",
+   "simultaneously" becomes "at the same time".
+6. Absence and negation: "not", "no", "none", or the approved
+   negative word. "absent" becomes "missing" or "not installed",
+   "faulty" becomes "unsatisfactory", "abnormal" becomes "unusual".
+7. Degree: "absolutely", "completely", "entirely", and "exactly"
+   become "fully". "critical" becomes "very important".
+8. One member of a word family is approved. When the noun is not,
+   its verb usually is. Write the sentence around the approved
+   member.
+9. A word with the prefix "re-" becomes "again" or "back" with the
+   basic word.
+10. A Latin suffix is a signal, not a verdict. About four of five
+    dictionary words in -ate, -ize, -ify, -ity, -ence, -ous, and
+    -able are not approved. The suffixes -ly and -al say nothing.
+11. A vague verb has no one replacement: act, affect, handle,
+    process. Name the specific action the code does.
+12. Technical nouns and technical verbs are outside the dictionary
+    (STE rules 1.5 to 1.13). The name of a part, a product, or a
+    process in your field stays. Use the shortest one, and always
+    the same one.
 
 ## 3. Verbs and sentences
 
@@ -423,8 +468,9 @@ These override the dictionary. Do not replace them.
 `reference/ste-lint.py` is a deterministic, stdlib-only linter for the
 structural rules. It tests: semicolons, sentence length, soft phrasal
 verbs, nominalization, marketing adjectives, synonym rotation, list
-items that end in "and" or "or", and, as advice only, passive voice
-and compound tenses. It never flags hedges. Confidence is content.
+items that end in "and" or "or", and, as advice only, passive voice,
+compound tenses, and verbs in -ize, -ise, or -ify (section 2b, item
+10). It never flags hedges. Confidence is content.
 
     python3 reference/ste-lint.py FILE...
     python3 reference/ste-lint.py --json FILE
@@ -439,14 +485,15 @@ The linter finds shape, not meaning. A clean run is not a review.
 
 ## 10. AI use
 
-The STEMG white paper on AI (June 2026) sets the frame. scraibe obeys it.
+The STEMG white paper on AI (June 2026) gives the direction for this
+section. The white paper is not an approval of this standard.
 
 - Every text the agent writes is a draft. A human reviews it and
   commits it. The agent never commits.
 - Say when AI wrote or changed a text. Use a git trailer, not a note
   in the document:
 
-      Doc-Draft: scraibe/0.1
+      Doc-Draft: scraibe/0.2
 
   The agent gives this line in its report. The human adds it to the
   commit when they accept the draft.
@@ -455,8 +502,10 @@ The STEMG white paper on AI (June 2026) sets the frame. scraibe obeys it.
   rewrite into a code commit.
 - Do not claim compliance. Write "follows the scraibe standard, which
   comes from ASD-STE100". Never write "ASD-STE100 compliant" or
-  "STE certified". ASD does not endorse AI tools, and the standard
-  gives no such status.
+  "STE certified". ASD and the STEMG do not endorse a tool, a checker,
+  or an AI solution, and the standard gives no such status.
+- Give the attribution with the reference. When a text you write names
+  ASD-STE100, include the statement from section 11.
 - Automated checks have limits. `ste-lint.py` tests sentence shape.
   It does not test meaning or dictionary compliance. The reviewer does.
 - Confidentiality is a policy decision of the organization, not of
@@ -468,11 +517,22 @@ The STEMG white paper on AI (June 2026) sets the frame. scraibe obeys it.
 scraibe is a derived guideline. It does not contain the ASD-STE100
 dictionary and does not replace it.
 
-ASD holds the copyright of ASD-STE100 Simplified Technical English
-(Aerospace, Security and Defence Industries Association of Europe,
-Brussels). ASD-STE100 is a registered EU trademark of ASD. Get an
-official copy free of charge at https://www.asd-ste100.org. Do not
-redistribute the specification or the dictionary.
+ASD-STE100 Simplified Technical English is a Copyright and a Trade
+Mark of ASD, Brussels, Belgium.
+
+This standard names ASD-STE100 as its source specification. The
+reference is a factual reference. It does not imply an endorsement,
+an approval, a certification, a validation, or an affiliation by ASD
+or by the ASD Simplified Technical English Maintenance Group (STEMG).
+The STEMG does not review, validate, approve, certify, or endorse a
+tool, a rule set, or a service. It did not review this standard.
+
+ASD is the Aerospace, Security and Defence Industries Association of
+Europe. ASD owns the copyright of ASD-STE100 and the European Union
+trade mark 017966390. The copyright rules and the special usage
+rights of ASD hold for the specification and for the dictionary. Do not
+redistribute them, in whole or in part. Get an official copy free of
+charge at https://www.asd-ste100.org.
 
 `reference/ste-lint.py` is from github.com/danyuchn/asd-ste100-skill,
 © 2026 Dustin Yuchen Teng, MIT license. See `reference/LICENSE-ste-lint`.

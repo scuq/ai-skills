@@ -77,4 +77,4 @@ At the end, give the caller:
 - The output of `bash build.sh`.
 - The output of the binary for one OK case from a test, and for `--help`.
 - Each assumption that the task did not give.
-- The line `Doc-Draft: scraibe/0.1` for the commit.
+- The line `Doc-Draft: scraibe/0.2` for the commit.

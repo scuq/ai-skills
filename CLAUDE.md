@@ -60,7 +60,7 @@ Claude Code loads the installed copies from `~/.claude/`, not the copies in this
 
 - To write documentation in this repository, use the installed scuq-scraibe skill and agent.
 - To change the scraibe standard, edit `skills/scuq-scraibe/SKILL.md`.
-- The standard has its own name and version, for example `scraibe v0.1`.
+- The standard has its own name and version, for example `scraibe v0.2`.
   The prefix does not apply to the name of the standard.
 - If you change the rules of the standard, tell the user.
   The user decides the new standard version.
@@ -106,4 +106,4 @@ Do these steps only when the user tells you to make a release.
 - Load the `scuq-scraibe` skill before you write documentation or comments.
 - Apply the scraibe standard to all Markdown files, `SKILL.md` files, agent files, and code comments.
 - Run `ste-lint.py` from the installed scuq-scraibe skill on each Markdown file you change.
-- In your report, give the `Doc-Draft: scraibe/0.1` trailer for the user to add to the commit.
+- In your report, give the `Doc-Draft: scraibe/0.2` trailer for the user to add to the commit.

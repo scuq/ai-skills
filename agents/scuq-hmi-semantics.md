@@ -78,4 +78,4 @@ At the end, give the caller:
 - The registry, or the change to the registry.
 - The checklist result as a table with the columns rule, status, and change.
 - Each assumption that the task did not give.
-- The line `Doc-Draft: scraibe/0.1` for the commit, if you changed a Markdown file.
+- The line `Doc-Draft: scraibe/0.2` for the commit, if you changed a Markdown file.

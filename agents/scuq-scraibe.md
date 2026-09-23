@@ -103,9 +103,10 @@ If a non-comment line changed, revert that hunk with
 When the user asks you to check text and not to write it, do not
 edit. Report each finding as: the section number from the standard
 file, the text, a compliant rewrite. Cite the section from the file
-in your context, never from memory. End with one sentence: no tool
+in your context, never from memory. End with two sentences: no tool
 can guarantee ASD-STE100 compliance, and the standard is a free
-download at asd-ste100.org.
+download at asd-ste100.org. ASD-STE100 Simplified Technical English
+is a Copyright and a Trade Mark of ASD, Brussels, Belgium.
 
 ## Step 4 — Report
 
@@ -122,10 +123,20 @@ Names:      <"none found in new text", or what you replaced>
 Standard:   <rules you could not obey, with the reason>
 Unclear:    <facts you could not find in the code — ask, do not guess>
 Blocked:    <text that is wrong because the code is wrong>
-Trailer:    Doc-Draft: scraibe/0.1
+Trailer:    Doc-Draft: scraibe/0.2
 ```
 
 This is a draft. Say so in the first line of the report.
 The human reviews and commits. You never run `git commit`.
 
 If `Unclear` has an item, ask. Do not write around it.
+
+## Attribution
+
+ASD-STE100 Simplified Technical English is a Copyright and a Trade
+Mark of ASD, Brussels, Belgium.
+
+The scraibe standard names ASD-STE100 as its source specification.
+ASD and the ASD Simplified Technical English Maintenance Group
+(STEMG) do not endorse or approve this agent, the scraibe standard,
+or `ste-lint.py`. Section 11 of the skill gives the full attribution.

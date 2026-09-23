@@ -6,6 +6,20 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-24
+
+### Added
+
+- scuq-scraibe: Section 2b of the standard gives 12 patterns for the choice of a word without the dictionary. The patterns come from an analysis of the ASD-STE100 Issue 9 dictionary.
+- scuq-scraibe: `ste-lint.py` gives an advisory finding for a verb in -ize, -ise, or -ify.
+
+### Changed
+
+- scuq-scraibe: The scraibe standard is now version 0.2. The commit trailer is `Doc-Draft: scraibe/0.2`.
+- scuq-scraibe: The skill, the agent, and `ste-lint.py` give the copyright and trade mark statement of ASD for ASD-STE100.
+- scuq-scraibe: The attribution section states that ASD and the STEMG do not endorse or approve this standard.
+- scuq-scraibe: In check mode, the agent gives the copyright and trade mark statement with its result.
+
 ## [0.2.0] - 2026-09-20
 
 ### Added

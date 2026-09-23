@@ -13,7 +13,11 @@ Usage:
     ste-lint.py --selftest
 
 Exit 1 when hard ("advisory-free") violations exceed the baseline (default 0).
-Advisory findings (passive voice, compound tenses) never fail the run.
+Advisory findings (passive voice, compound tenses, Latin verb suffixes) never
+fail the run.
+
+ASD-STE100 Simplified Technical English is a Copyright and a Trade Mark of ASD,
+Brussels, Belgium. ASD and the STEMG do not endorse this linter.
 """
 import json
 import re
@@ -38,6 +42,11 @@ RULES = [
     ("passive-voice", "advisory",
      re.compile(r"\b(is|are|was|were|been|being)\s+(\w+ed|given|taken|made|done|found|seen|known|shown|written|built|sent|set|run|read|kept|held|left|put)\b(?!\s+(?:to|for|by)\s+\w+ing)", re.I),
      "Possible passive voice. Name the actor and use an active verb, unless the actor is unknown or irrelevant."),
+    ("latin-verb", "advisory",
+     # -ize/-ise/-ify verbs: about four of five such dictionary words are not
+     # approved. Non-verb spellings that share the ending are excluded.
+     re.compile(r"\b(?!(?:otherwise|likewise|clockwise|counterclockwise|anticlockwise|precise|concise|premise|premises|promise|promises|exercise|exercises|expertise|enterprise|enterprises|franchise|merchandise|surprise|surprises|sunrise|cruise|bruise|disguise|paradise|treatise|demise|reprise)\b)[a-z]{3,}(?:iz|is)(?:e|es|ed|ing)\b|\b[a-z]{3,}if(?:y|ies|ied|ying)\b", re.I),
+     "Verb with a Latin suffix. Most of these are not approved in STE. Use the plain verb, unless the word is a technical verb."),
     ("present-perfect", "advisory",
      # modal + perfect infinitive ("may have failed") is a protected hedge, not present perfect
      re.compile(r"(?<!\bmay )(?<!\bmight )(?<!\bcould )(?<!\bshould )(?<!\bwould )(?<!\bmust )\b(has|have|had)\s+(?:been\s+)?\w+(?:ed|en)\b", re.I),
@@ -302,12 +311,16 @@ def report(findings, words_total, as_json, hard_count, baseline):
 def selftest():
     bad = ("The panel is removed; spin up the job. "
            "Perform an analysis of the seamless log. "
-           "We have received the report.")
+           "We have received the report. Initialize and verify the cache.")
     findings, _ = lint(bad)
     rules = {f["rule"] for f in findings}
     for expected in ("semicolon", "phrasal-verb", "nominalization",
-                     "marketing-adjective", "passive-voice", "present-perfect"):
+                     "marketing-adjective", "passive-voice", "present-perfect",
+                     "latin-verb"):
         assert expected in rules, expected
+    # spellings that only look like a Latin verb are not flagged
+    findings, _ = lint("Otherwise the noise, the size, and the premise rise.")
+    assert not [f for f in findings if f["rule"] == "latin-verb"], findings
     # hedges must never be flagged, including modal + perfect infinitive
     findings, _ = lint("The request may have failed. It could be a timeout. "
                        "The disk might have filled.")
