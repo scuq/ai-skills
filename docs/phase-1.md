@@ -1,6 +1,10 @@
 # Phase 1
 
+## BLUF
+
 Phase 1 sets up the repository for skill and agent development and distribution.
+All features of the phase are done.
+GitHub releases distribute the skills and agents, and `ai-skillsctl update` installs them.
 
 ## Features
 
@@ -20,6 +24,7 @@ Phase 1 sets up the repository for skill and agent development and distribution.
 | `scuq-` name prefix | Prevents a conflict with a skill or an agent of the user with the same name. `scripts/test.sh` checks it. | done |
 | ASD-STE100 attribution | Gives the copyright, trade mark, and non-endorsement statement that ASD asks for. | done |
 | scraibe word-choice patterns | Gives the agent 12 patterns for the choice of a word without the dictionary, and an advisory lint rule for Latin verb suffixes. | done |
+| scraibe BLUF | Every prose document starts with a BLUF section (bottom line up front). The agent checks on every task if the BLUF of the top-level `README.md` is true, and `ste-lint.py` tests the shape of the section. | done |
 | `scripts/sync-chezmoi.sh` | Copied the skills and agents into the chezmoi source directory. `ai-skillsctl` replaces it. | done |
 
 ## Distribution

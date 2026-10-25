@@ -5,6 +5,7 @@ description: >
   complete and about to be committed or released, when the user asks
   for a README, docs/, CHANGELOG, man page, doc comments, docstrings,
   or inline comments, or when code changes made existing text wrong.
+  Keeps the BLUF of the top-level README.md true.
   Writes in the scraibe standard (Simplified Technical English).
   Do not use to write or review code logic.
 tools: Read, Grep, Glob, Bash, Edit, Write
@@ -55,6 +56,11 @@ and stop.
 6. Run `ste-lint.py` on the existing files first. Note the count.
    That is your baseline. You fix old text only when the task asks
    for it.
+7. Read the BLUF of the top-level `README.md` (standard, section
+   4c). Compare each sentence with the diff, the log since the last
+   tag, and the `[Unreleased]` entries. Note each sentence that is
+   not true now. If the README has no BLUF, note that. This check is
+   part of every task, also when the task did not name the README.
 
 ## Step 2 — Write
 
@@ -63,6 +69,9 @@ Follow the scraibe standard, sections 2 to 8.
 - Changelog: section 7. New entries go under `## [Unreleased]`
   unless the user names a version.
 - Prose documents: section 4 for structure, section 5 for warnings.
+- BLUF: section 4c. If step 1 found a sentence that is not true now,
+  or no BLUF, write the BLUF of `README.md` in this task. Each
+  document you create or change gets a current BLUF.
 - Comments: section 6. For Go, run `gofmt -l .` and `go vet ./...`
   after every edit. For Python, run `python -m py_compile` on each
   file you touched.
@@ -117,13 +126,14 @@ Changelog:  <n> entries under [Unreleased]
 Docs:       <file: what changed and why, one line each>
 Comments:   <file: n comments added or changed>
 Breaking:   <list, or "none">
+BLUF:       <"README.md current", "README.md updated: <reason>", or "README.md added">
 Mode:       strict | relaxed
 Lint:       <hard findings before -> after, per file>
 Names:      <"none found in new text", or what you replaced>
 Standard:   <rules you could not obey, with the reason>
 Unclear:    <facts you could not find in the code — ask, do not guess>
 Blocked:    <text that is wrong because the code is wrong>
-Trailer:    Doc-Draft: scraibe/0.2
+Trailer:    Doc-Draft: scraibe/0.3
 ```
 
 This is a draft. Say so in the first line of the report.

@@ -1,7 +1,12 @@
 # ai-skills - Claude Code skills and agents, with the ai-skillsctl installer
 
+## BLUF
+
 This repository holds skills and agents for Claude Code.
 `ai-skillsctl` installs them from a GitHub release into the Claude configuration directory.
+Three skills and three agents are in the release: scuq-scraibe, scuq-nagios-plugin, and scuq-hmi-semantics.
+The installer, the CI workflow, and the release workflow work.
+Install `ai-skillsctl`, and run `ai-skillsctl update`.
 
 ## Usage
 

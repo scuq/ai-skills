@@ -6,6 +6,19 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-25
+
+### Added
+
+- scuq-scraibe: Section 4c of the standard gives the rules for the BLUF section (bottom line up front) at the top of every prose document. The BLUF is one paragraph of at most 80 words. It states what the document describes, its state, and the first action.
+- scuq-scraibe: `ste-lint.py` flags a `README.md` without a BLUF section. It also flags a BLUF that is not the first section, or that has more than 80 words or six sentences. A list, a code block, or a link in the BLUF is a finding too.
+
+### Changed
+
+- scuq-scraibe: The scraibe standard is now version 0.3. The commit trailer is `Doc-Draft: scraibe/0.3`.
+- scuq-scraibe: On every task, the agent compares the BLUF of the top-level `README.md` with the code, the commits since the last tag, and the `[Unreleased]` entries. If a sentence is not true now, the agent corrects it in the same task. The report has a `BLUF:` line.
+- scuq-scraibe: The README structure in section 4 has the section BLUF after the title.
+
 ## [0.3.0] - 2026-09-24
 
 ### Added

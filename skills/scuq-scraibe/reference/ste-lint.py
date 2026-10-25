@@ -5,6 +5,10 @@ Checks only rules verifiable without ASD's dictionary. Deliberately never
 flags hedges or modality (may/might/could): the skill treats confidence as
 content, and a linter that pressures hedges out would rewrite claims.
 
+The BLUF rules (bluf-missing, bluf-position, bluf-shape, bluf-long) test
+the shape of the BLUF section of SKILL.md section 4c. They cannot test if
+the BLUF is true.
+
 Usage:
     ste-lint.py FILE [FILE ...]
     echo "text" | ste-lint.py [--json]
@@ -78,6 +82,10 @@ LIST_ITEM_START = re.compile(
 )
 CONJUNCTION_END = re.compile(r"\b(?:and|or)\s*$", re.I)
 TABLE_SEPARATOR_CELL = re.compile(r"^:?-{3,}:?$")
+HEADING = re.compile(r"^(?P<level>#{1,6})\s+(?P<text>.*?)\s*#*\s*$")
+README_NAMES = {"readme.md"}
+BLUF_MAX_WORDS = 80
+BLUF_MAX_SENTENCES = 6
 
 
 def _word_re(base):
@@ -237,6 +245,91 @@ def _dangling_conjunction_findings(text, filename):
     return findings
 
 
+def _headings(lines):
+    """Return (index, level, text) for each ATX heading outside a code fence."""
+    found = []
+    in_fence = False
+    for index, raw in enumerate(lines):
+        if CODE_FENCE.match(raw.strip()):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        m = HEADING.match(raw)
+        if m:
+            found.append((index, len(m.group("level")), m.group("text")))
+    return found
+
+
+def _bluf_findings(text, filename):
+    """Test the BLUF section (SKILL.md section 4c).
+
+    A README.md must have a heading "BLUF". In every file, the BLUF is the
+    first section after the title, holds at most BLUF_MAX_WORDS words and
+    BLUF_MAX_SENTENCES sentences, and has no list, code block, or link.
+    The linter cannot test if the BLUF is true.
+    """
+    lines = text.splitlines()
+    headings = _headings(lines)
+    bluf = [h for h in headings if h[2] == "BLUF"]
+    basename = filename.replace("\\", "/").rsplit("/", 1)[-1].lower()
+    if not bluf:
+        if basename in README_NAMES:
+            return [{"file": filename, "line": 1, "col": 1, "rule": "bluf-missing",
+                     "level": "advisory-free", "match": "no BLUF heading",
+                     "message": "README.md has no BLUF section. Add one after the title."}]
+        return []
+    index, level, _ = bluf[0]
+    findings = []
+    position = [h[0] for h in headings].index(index)
+    if position > 1:
+        findings.append({"file": filename, "line": index + 1, "col": 1,
+                         "rule": "bluf-position", "level": "advisory-free",
+                         "match": "#" * level + " BLUF",
+                         "message": "The BLUF is not the first section after the title. Move it."})
+    body = []
+    for raw in lines[index + 1:]:
+        if HEADING.match(raw):
+            break
+        body.append(raw)
+    in_fence = False
+    words = 0
+    prose = []
+    for offset, raw in enumerate(body):
+        stripped = raw.strip()
+        if CODE_FENCE.match(stripped):
+            in_fence = not in_fence
+            findings.append({"file": filename, "line": index + 2 + offset, "col": 1,
+                             "rule": "bluf-shape", "level": "advisory-free",
+                             "match": stripped[:3],
+                             "message": "The BLUF has a code block. Write one paragraph of prose."})
+            continue
+        if in_fence:
+            continue
+        if LIST_ITEM_START.match(raw):
+            findings.append({"file": filename, "line": index + 2 + offset, "col": 1,
+                             "rule": "bluf-shape", "level": "advisory-free",
+                             "match": stripped[:20],
+                             "message": "The BLUF has a list. Write one paragraph of prose."})
+        if "](" in raw:
+            findings.append({"file": filename, "line": index + 2 + offset,
+                             "col": raw.index("](") + 1,
+                             "rule": "bluf-shape", "level": "advisory-free",
+                             "match": "](",
+                             "message": "The BLUF has a link. Put the link in the body of the document."})
+        line = INLINE_CODE.sub("x", raw)
+        words += len(line.split())
+        prose.append(line.strip())
+    sentences = len([t for t in re.split(r"(?<=[.!?])\s+", " ".join(prose)) if t.strip()])
+    if words > BLUF_MAX_WORDS or sentences > BLUF_MAX_SENTENCES:
+        findings.append({"file": filename, "line": index + 1, "col": 1,
+                         "rule": "bluf-long", "level": "advisory-free",
+                         "match": f"{words} words, {sentences} sentences",
+                         "message": f"The BLUF has {words} words and {sentences} sentences "
+                                    f"(cap {BLUF_MAX_WORDS} words, {BLUF_MAX_SENTENCES} sentences). Shorten it."})
+    return findings
+
+
 def lint(text, filename="<stdin>"):
     findings = []
     words_total = 0
@@ -290,6 +383,7 @@ def lint(text, filename="<stdin>"):
                                  "match": match,
                                  "message": f"'{base}' and '{first_base}' name the same action. Pick one and use it every time."})
     findings.extend(_dangling_conjunction_findings(text, filename))
+    findings.extend(_bluf_findings(text, filename))
     findings.sort(key=lambda f: (f["line"], f["col"]))
     return findings, words_total
 
@@ -425,6 +519,26 @@ def selftest():
     # per-file labels
     findings, _ = lint("a; b", filename="x.md")
     assert findings[0]["file"] == "x.md"
+    # BLUF: a README.md without the section is flagged, other files are not
+    findings, _ = lint("# tool - does a thing\n\n## Usage\n", filename="docs/README.md")
+    assert [f["rule"] for f in findings] == ["bluf-missing"], findings
+    findings, _ = lint("# tool - does a thing\n\n## Usage\n", filename="docs/guide.md")
+    assert not any(f["rule"].startswith("bluf") for f in findings), findings
+    good = "# tool - does a thing\n\n## BLUF\n\ntool copies files. The copy works.\n\n## Usage\n"
+    findings, _ = lint(good, filename="README.md")
+    assert not any(f["rule"].startswith("bluf") for f in findings), findings
+    # position, shape, and length
+    findings, _ = lint("# t\n\n## Usage\n\n## BLUF\n\nText.\n", filename="README.md")
+    assert [f["rule"] for f in findings] == ["bluf-position"], findings
+    findings, _ = lint("# t\n\n## BLUF\n\n- item\n\nSee [x](y).\n\n```\ncode\n```\n")
+    assert [f["rule"] for f in findings] == ["bluf-shape"] * 4, findings
+    findings, _ = lint("# t\n\n## BLUF\n\n" + "word " * 81 + "\n")
+    assert [f["rule"] for f in findings if f["rule"].startswith("bluf")] == ["bluf-long"], findings
+    findings, _ = lint("# t\n\n## BLUF\n\n" + "One. " * 7 + "\n")
+    assert [f["rule"] for f in findings if f["rule"].startswith("bluf")] == ["bluf-long"], findings
+    # a fenced BLUF heading is not a heading
+    findings, _ = lint("# t\n\n```\n## BLUF\n```\n", filename="README.md")
+    assert [f["rule"] for f in findings] == ["bluf-missing"], findings
     print("selftest OK")
 
 

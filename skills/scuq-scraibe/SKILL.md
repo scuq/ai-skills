@@ -1,22 +1,25 @@
 ---
 name: scuq-scraibe
 description: >
-  scraibe v0.2 — the writing standard for all documentation and code
+  scraibe v0.3 — the writing standard for all documentation and code
   comments. Load when you write or review a README, docs/, CHANGELOG,
   man page, Go doc comment, Python docstring, .NET XML doc, Bash
   header, or inline comment.
 ---
 
-# scraibe v0.2
+# scraibe v0.3
+
+## BLUF
 
 scraibe is one standard for all documentation and comments.
 The goal: short text, simple words, no missing facts.
-
-scraibe merges three sources. When they disagree, this file decides.
-
-- ASD-STE100 Issue 9 (2025): words, verbs, sentences, warnings
-- man-pages(7): document structure, preferred terms
-- go.dev/doc/comment: Go doc comments
+It merges ASD-STE100 Issue 9 (2025) for words, verbs, sentences, and
+warnings, man-pages(7) for document structure and preferred terms,
+and go.dev/doc/comment for Go doc comments.
+When they disagree, this file decides.
+Every prose document starts with a BLUF section (section 4c).
+On every task in a repository, make sure the BLUF of the top-level
+README.md is true now.
 
 ## 1. Priority
 
@@ -264,6 +267,7 @@ Use the man-pages(7) section order. Use only the sections that apply.
 For README.md the same order with these headings:
 
     <title> - <one line>       (NAME)
+    BLUF                       (section 4c)
     Usage                      (SYNOPSIS)
     Description
     Options / Configuration
@@ -276,6 +280,8 @@ For README.md the same order with these headings:
 Rules:
 
 - NAME is one line: `name - what it does`, lowercase.
+- BLUF is the first section after the title. Section 4c gives the
+  rules.
 - SYNOPSIS notation: bold for as-is text, italic for replaceable
   text, `[]` optional, `|` choice, `...` repeat.
 - DESCRIPTION gives the usual case. Options go in OPTIONS.
@@ -363,6 +369,45 @@ For steps in a graphical interface or a web console:
   a submenu. Available and unavailable (not active, grayed out).
   Dialog box. Double-click to open. Right-click for a context menu.
   "Under *Name*" for a group in a dialog box.
+
+## 4c. BLUF
+
+BLUF is the bottom line up front (the conclusion before the detail).
+Every prose document starts with it: README.md, each file under
+docs/, a design note, a runbook, an incident report. The heading is
+`BLUF`, at the level of the other top sections of the document,
+directly after the title. A CHANGELOG, a man page source, and a code
+comment have no BLUF.
+
+A BLUF is one paragraph in strict mode. It answers three questions,
+in this order:
+
+1. What is this, and what does it do for the reader. One sentence.
+2. What state is it in: what works, what does not, and what changed
+   last. One to three sentences.
+3. What must the reader do first. One sentence, imperative. Omit it
+   when there is no such action.
+
+Rules:
+
+- 80 words maximum. Six sentences maximum.
+- No list, no code block, no heading, and no link in the BLUF. A code
+  span for an identifier is permitted.
+- Every fact in the BLUF also stands in the body of the document. The
+  BLUF adds no fact.
+- Write the state, not a version number or a date. "The import works.
+  The scheduler comes next.", not "Version 0.3 added the import."
+- A BLUF goes out of date before the rest of the document, because it
+  states the current state. Read the BLUF of the top-level README.md
+  at the start of every task in a repository, before you write.
+  Compare each sentence with the code, the commits since the last
+  tag, and the `[Unreleased]` entries of the CHANGELOG. If a sentence
+  is not true now, or the README has no BLUF, correct it in the same
+  task, also when the task did not name the README. Do the same for
+  each document you change. Report the change.
+
+`ste-lint.py` tests the presence, the position, the length, and the
+shape of the BLUF (section 9). It cannot test if the BLUF is true.
 
 ## 5. Warnings
 
@@ -468,7 +513,8 @@ These override the dictionary. Do not replace them.
 `reference/ste-lint.py` is a deterministic, stdlib-only linter for the
 structural rules. It tests: semicolons, sentence length, soft phrasal
 verbs, nominalization, marketing adjectives, synonym rotation, list
-items that end in "and" or "or", and, as advice only, passive voice,
+items that end in "and" or "or", the BLUF section of a README.md
+(section 4c), and, as advice only, passive voice,
 compound tenses, and verbs in -ize, -ise, or -ify (section 2b, item
 10). It never flags hedges. Confidence is content.
 
@@ -493,7 +539,7 @@ section. The white paper is not an approval of this standard.
 - Say when AI wrote or changed a text. Use a git trailer, not a note
   in the document:
 
-      Doc-Draft: scraibe/0.2
+      Doc-Draft: scraibe/0.3
 
   The agent gives this line in its report. The human adds it to the
   commit when they accept the draft.
@@ -583,6 +629,8 @@ Then the rules:
 - No organization name, person's name, handle, or email in prose.
   No real hostname, domain, or address in an example.
 - The reader can do the task with this text only.
+- The top-level README.md has a BLUF, and every sentence in it is
+  true now.
 - No claim got stronger or weaker. No fact got added.
 - `ste-lint.py` shows no hard finding above the baseline.
 - Go: `gofmt -l` shows no file. `go vet` passes.
