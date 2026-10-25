@@ -1,25 +1,24 @@
 ---
 name: scuq-scraibe
 description: >
-  scraibe v0.3 — the writing standard for all documentation and code
+  scraibe v0.4, the writing standard for all documentation and code
   comments. Load when you write or review a README, docs/, CHANGELOG,
   man page, Go doc comment, Python docstring, .NET XML doc, Bash
   header, or inline comment.
 ---
 
-# scraibe v0.3
+<!-- ste-lint: disable-file filler-word,marketing-adjective,nominalization,phrasal-verb,parenthetical-plural,synonym-rotation -->
+
+# scraibe v0.4
 
 ## BLUF
 
-scraibe is one standard for all documentation and comments.
-The goal: short text, simple words, no missing facts.
-It merges ASD-STE100 Issue 9 (2025) for words, verbs, sentences, and
-warnings, man-pages(7) for document structure and preferred terms,
-and go.dev/doc/comment for Go doc comments.
-When they disagree, this file decides.
-Every prose document starts with a BLUF section (section 4c).
-On every task in a repository, make sure the BLUF of the top-level
-README.md is true now.
+scraibe is one standard for all documentation and comments: short
+text, simple words, no missing facts. It comes from ASD-STE100 Issue
+9 (2025), man-pages(7), and go.dev/doc/comment, and this file decides
+when they disagree. Every prose document starts with a BLUF section
+(section 4c). On every task in a repository, make sure the BLUF of
+the top-level README.md is true now.
 
 ## 1. Priority
 
@@ -27,49 +26,39 @@ Apply these in order. A lower rule never breaks a higher one.
 
 1. Correct. The text says what the code does. Read the code first.
    Never add a fact the code does not show.
-2. Complete. The reader can do the task with this text only.
-   Never remove a necessary fact to make the text shorter.
+2. Complete. The reader can do the task with this text only. Never
+   delete a necessary fact to make the text shorter.
 3. Same claim. Never change the strength of a statement. A rewrite
-   that turns a possibility into a fact is a different claim, not a
-   shorter one. Say the strength with STE words: "can" for a
-   possibility, "must" for a requirement, "unknown" for an unknown
-   cause, a stated condition for a case. Never should, would, may,
-   might, could. A required "should" becomes "must". An optional
-   "should" is deleted. A "may have failed" becomes "possibly failed"
-   or "failed in some cases", not "failed".
-4. Short. Remove every word that carries no information.
+   that turns a possibility into a fact is a different claim. Say the
+   strength with STE words: "can" for a possibility, "must" for a
+   requirement, "unknown" for an unknown cause, a stated condition
+   for a case. Never should, would, may, might, could. A required
+   "should" becomes "must", an optional "should" is deleted. "May
+   have failed" becomes "possibly failed" or "failed in some cases",
+   not "failed".
+4. Short. Delete every word that carries no information.
 5. Style. All rules below.
 
 ## 1a. Two kinds of rules, two modes
 
-Structural rules describe the shape of a sentence. You can apply
-them without the STE dictionary, and `ste-lint.py` can test most of
-them. Lexical rules depend on the dictionary, which this standard
-does not contain. Apply them as a direction, not as a test, and do
-not claim dictionary compliance.
+Structural rules describe the shape of a sentence, and `ste-lint.py`
+tests most of them. Lexical rules depend on the dictionary, which
+this standard does not contain: apply them as a direction, not as a
+test.
 
-Strict mode: comments, docstrings, error messages, CLI help, man
-pages, CHANGELOG entries, warnings, procedures. Apply every rule.
-
-Relaxed mode: README narrative, docs/ explanations, design notes.
-Apply all structural rules (section 3). Treat the replace table in
-section 2 as advice. Prose needs some range.
-
-When the user does not name a mode, pick one from the text type.
+Strict mode, every rule: comments, docstrings, error messages, CLI
+help, man pages, CHANGELOG entries, warnings, procedures. Relaxed
+mode, all structural rules (section 3) and the replace table as
+advice: README narrative, docs/ explanations, design notes. When the
+user does not name a mode, pick one from the text type.
 
 ## 2. Words
 
-You can use only these four groups of words:
-
-- Approved STE words (see section 9 to check a word)
-- Technical nouns: identifiers, flags, paths, config keys, product
-  names, protocol names, error strings, units, file formats
-- Technical verbs: parse, compile, build, deploy, commit, push, mount,
-  encrypt, decode, serialize, route, log, and other verbs that name a
-  computer process
-- Protected idioms (section 8)
-
-Rules:
+Use only four groups of words: approved STE words, technical nouns
+(identifiers, flags, paths, config keys, product names, protocol
+names, error strings, units, file formats), technical verbs (parse,
+compile, deploy, mount, encrypt, serialize, and other verbs that name
+a computer process), and protected idioms (section 8).
 
 - One name for one thing. Do not alternate between "config file",
   "configuration", and "settings".
@@ -78,42 +67,35 @@ Rules:
   verb as a noun ("a deploy") unless the project already does.
 - Multi-word nouns: three words maximum. Longer: write it in full or
   hyphenate ("read-only", "command-line").
-- American spelling.
-- No contractions.
-- Spell out "for example", "that is", "and so on".
-  Never "e.g.", "i.e.", "etc.".
-- Address the reader as "you". Never "we". For a third person use
-  "they".
-- Define a concept term at its first use, in fewer than ten words:
-  "idempotent (safe to run twice)". Do not define product names,
-  standard names, or the tool the document is about. Write the
-  definition in the same part of speech as the term, so it can
-  replace the term in a sentence. Do not capitalize the term.
-- Abbreviations: write the term in full at its first use, then the
-  abbreviation in parentheses: "external dynamic list (EDL)". Use
-  the abbreviation after that. One abbreviation has one meaning in a
-  document. Do not coin new abbreviations. Do not introduce an
-  abbreviation in a heading. Do not capitalize a term because its
-  abbreviation is uppercase: "ground support equipment (GSE)".
-  Write a unit abbreviation only next to a number, and repeat it in
-  a range: "10 ms to 20 ms".
-- Serial comma: "A, B, and C". In technical text the last comma
-  removes an ambiguity.
+- American spelling. No contractions. Spell out "for example", "that
+  is", "and so on", never "e.g.", "i.e.", "etc.".
+- Address the reader as "you", never "we". A third person is "they".
+- Define a concept term at its first use, in fewer than ten words
+  and in the same part of speech, so that the definition can replace
+  the term: "idempotent (safe to run twice)". Do not define product
+  names, standard names, or the tool the document is about. Do not
+  capitalize the term.
+- Abbreviations: the term in full at its first use, then the
+  abbreviation in parentheses: "external dynamic list (EDL)", and
+  the abbreviation after that. One abbreviation has one meaning. Do
+  not coin one, do not introduce one in a heading, and do not
+  capitalize the term because the abbreviation is uppercase. Write a
+  unit only next to a number, and repeat it in a range: "10 ms to
+  20 ms".
+- Serial comma: "A, B, and C".
 - No parenthetical plurals: "file(s)". Write "files" or "one or
   more files".
-- Delete words that carry no fact. A short list of the usual ones:
-  simply, just, easily, seamless, robust, powerful, comprehensive,
-  leverage, crucial, "in order to", "it is worth noting", "is
-  designed to", "aims to", "out of the box" (write "by default"),
-  "under the hood" (write "internally"), furthermore, moreover
-  (write "also"), "in conclusion". When a word claims a quality,
-  give the measurement or delete the word.
+- Delete words that carry no fact: simply, just, easily, seamless,
+  robust, powerful, comprehensive, leverage, crucial, "in order to",
+  "it is worth noting", "is designed to", "aims to", "in conclusion",
+  furthermore and moreover (write "also"), "out of the box" (write
+  "by default"), "under the hood" (write "internally"). When a word
+  claims a quality, give the measurement or delete the word.
 
-Replace these words. All verified against the Issue 9 dictionary.
-Replace a word only when the meaning stays the same. If the original
-word carries a hedge or a permission ("may have failed", "you may
-skip this step"), keep the meaning in the new wording or keep the
-original word and report it.
+Replace these words, verified against the Issue 9 dictionary, only
+when the meaning stays the same. If the original carries a hedge or
+a permission ("may have failed", "you may skip this step"), keep the
+meaning in the new wording, or keep the word and report it.
 
 | Do not write | Write |
 |---|---|
@@ -137,362 +119,202 @@ original word and report it.
 
 ## 2a. Names and identities
 
-Documentation names things, not people or organizations.
-
-- Never write the name of the organization that owns the code, its
-  departments, or its internal teams. Write "the organization", "the
-  operator", or the placeholder Cyberdyne Systems. This holds even when the name appears in
-  the code, in git history, in hostnames, in a config file, or in
-  the task text from the user or from another agent.
-- Never write a real username, handle, email address, or personal
-  name. Write "the user", or a role ("the administrator"), or a
-  placeholder from the list below.
-- Never credit an author. No AUTHORS section, no "written by", no
-  name in a changelog entry or a comment. Git holds the history.
-- The default organization in all examples is Cyberdyne Systems,
-  domain `cyberdyne.example`. When a second organization is needed,
-  it is ACME, domain `acme.example`. Use them in that order. Do not
-  invent a third. The `.example` top-level domain is reserved (RFC
-  2606) and never resolves. Do not use a live top-level domain for a
-  placeholder, because someone can register it.
-- People: Alice, Bob, Carol, Dave in that order. For security text:
-  Eve (eavesdropper), Mallory (attacker), Trent (trusted third
-  party). Addresses: `alice@cyberdyne.example`.
-- Addresses: `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`
-  (RFC 5737), `2001:db8::/32` (RFC 3849), MAC `00-53-00-xx-xx-xx`
-  (RFC 7042). Hostnames: `fw01.cyberdyne.example`.
-- Never a real hostname, domain, address, or organization name from
-  the code, unless the user asks for the real value in that document.
-- In certificate and ACME-protocol documents, do not use ACME as an
-  organization. Use Cyberdyne Systems only.
-- Vendor and product names are technical names and stay: Cisco,
-  Palo Alto Networks, Debian, PostgreSQL. The line is: the name of a
-  thing you can buy or download stays. The name of a person or of
-  the organization that runs the code does not.
-- When an identifier itself contains a person's name or the
-  organization's name (a config key, a function name, a path), you
-  can write the identifier verbatim in a code span, because the code
-  is the truth. Do not repeat the name in prose around it.
+Documentation names things, not people or organizations. Never write
+the name of the organization that owns the code, a person, a handle,
+or an email address, also when the code or the task text has it.
+Write "the organization", "the user", a role, or a placeholder:
+Cyberdyne Systems (`cyberdyne.example`), then ACME (`acme.example`).
+People: Alice, Bob, Carol, Dave. Addresses: the RFC 5737 and RFC 3849
+ranges. A vendor or product name stays. Never credit an author.
+Read `reference/names.md` before you write an example with a name,
+an address, or a domain.
 
 ## 2b. Word choice without the dictionary
 
-This standard does not contain the dictionary (section 11). When you
-must judge a word that is not in section 2, use these patterns. They
-come from an analysis of the 2198 entries of the Issue 9 dictionary.
-They are a direction, not a test (section 1a).
-
-1. Keep the part of speech. A verb becomes a verb, an adjective an
-   adjective. Four of five replacements in the dictionary do this.
-2. Choose the concrete word for this one meaning. The dictionary
-   spreads its replacements over more than 600 approved words. It
-   has no small set of general words. A word with several meanings
-   gets one replacement per meaning: "perform a test" becomes "do a
-   test", "perform a measurement" becomes "measure". Ask what
-   physically happens: put, move, remove, stop, start, attach, hold,
-   turn, show, tell, give, find.
-3. An action noun becomes its verb: "the absorption of moisture by
-   the gel" becomes "the gel absorbs the moisture". Nouns in -tion,
-   -ment, and -ance are the usual case.
-4. A tool used as a verb becomes a general verb and the tool: "bolt
-   the bracket" becomes "attach the bracket with bolts". A technical
-   noun is never a verb (STE rule 1.7).
-5. When no one word fits, build a phrase from approved words:
-   "exceed" becomes "more than", "excessive" becomes "too much",
-   "simultaneously" becomes "at the same time".
-6. Absence and negation: "not", "no", "none", or the approved
-   negative word. "absent" becomes "missing" or "not installed",
-   "faulty" becomes "unsatisfactory", "abnormal" becomes "unusual".
-7. Degree: "absolutely", "completely", "entirely", and "exactly"
-   become "fully". "critical" becomes "very important".
-8. One member of a word family is approved. When the noun is not,
-   its verb usually is. Write the sentence around the approved
-   member.
-9. A word with the prefix "re-" becomes "again" or "back" with the
-   basic word.
-10. A Latin suffix is a signal, not a verdict. About four of five
-    dictionary words in -ate, -ize, -ify, -ity, -ence, -ous, and
-    -able are not approved. The suffixes -ly and -al say nothing.
-11. A vague verb has no one replacement: act, affect, handle,
-    process. Name the specific action the code does.
-12. Technical nouns and technical verbs are outside the dictionary
-    (STE rules 1.5 to 1.13). The name of a part, a product, or a
-    process in your field stays. Use the shortest one, and always
-    the same one.
+When you must judge a word that section 2 does not name, read
+`reference/word-choice.md`: 12 patterns from the Issue 9 dictionary,
+such as keep the part of speech, choose the concrete word for one
+meaning, and turn an action noun into its verb.
 
 ## 3. Verbs and sentences
 
-- Use only these verb forms: imperative, infinitive, simple present,
-  simple past, simple future, past participle as adjective.
-  Exception: keep a present perfect when it carries a fact the simple
-  form loses ("the job has completed" means the output exists now).
-  Report the exception.
+- Verb forms: imperative, infinitive, simple present, simple past,
+  simple future, past participle as adjective. Exception: keep a
+  present perfect that carries a fact the simple form loses ("the
+  job has completed" means the output exists now), and report it.
 - No "-ing" verb forms. A technical noun can end in "-ing"
   (encoding, logging, routing, load balancing).
 - Active voice. Passive only when the agent is unknown.
 - Present tense for what the code does now.
-- Instructions: 20 words per sentence maximum.
-  Descriptions: 25 words per sentence maximum.
-  Count each of these as one word: a number, a number with a unit, an
-  identifier, a code span, a hyphenated word, text in parentheses.
-- One instruction per sentence. One topic per sentence in descriptions.
-- Write the condition first:
-  "If the file does not exist, Open returns ErrNotExist."
+- Instructions: 20 words per sentence maximum. Descriptions: 25. A
+  number, a number with a unit, an identifier, a code span, a
+  hyphenated word, and text in parentheses each count as one word.
+- One instruction per sentence. One topic per sentence in a
+  description.
+- Condition first: "If the file does not exist, Open returns
+  ErrNotExist."
 - Keep the articles: "the buffer", "a reader". Do not drop words to
   save space.
 - No semicolons. STE permits all other standard punctuation.
-- No phrasal verbs. "shut down" → "stop". "set up" → "install" or
-  "configure". "carry out" → "do".
-- Paragraph: one topic, six sentences maximum.
-- Give information gradually: the general fact first, then detail.
-- When a sentence has more than two items or conditions, use a
-  vertical list.
-- Items in a list or a series are parallel: all commands, or all
-  statements, or all noun phrases. Test: write the list as one
-  sentence first, then break it. The casing and punctuation follow
-  from that sentence.
-- A list has at least two items at a level. Order steps in the order
-  the reader does them. Order explanations from general to specific.
-  Order equal items alphabetically.
+- No phrasal verbs: "shut down" is "stop", "set up" is "install" or
+  "configure", "carry out" is "do".
+- Paragraph: one topic, six sentences maximum. The general fact
+  first, then detail.
+- More than two items or conditions in a sentence: use a vertical
+  list.
+- List items are parallel: all commands, or all statements, or all
+  noun phrases. Test: write the list as one sentence, then break it.
+  Casing and punctuation follow from that sentence.
+- A list has at least two items at a level. Order steps as the
+  reader does them, explanations from general to specific, equal
+  items alphabetically.
 - To avoid "he or she", make the antecedent plural: "All operators
   must inform their supervisor", not "Each operator must inform
   their supervisor".
 
 ## 4. Document structure
 
-Use the man-pages(7) section order. Use only the sections that apply.
-
-    NAME, SYNOPSIS, DESCRIPTION, OPTIONS, EXIT STATUS, ENVIRONMENT,
-    FILES, EXAMPLES, CAVEATS, BUGS, SEE ALSO
-
-For README.md the same order with these headings:
+Use the man-pages(7) section order, and only the sections that
+apply. For README.md the headings are:
 
     <title> - <one line>       (NAME)
     BLUF                       (section 4c)
     Usage                      (SYNOPSIS)
     Description
-    Options / Configuration
-    Exit status
+    Options / Configuration    (OPTIONS)
+    Exit status                (EXIT STATUS)
     Environment
     Files
     Examples
-    See also
-
-Rules:
+    Caveats, Bugs              (CAVEATS, BUGS)
+    See also                   (SEE ALSO)
 
 - NAME is one line: `name - what it does`, lowercase.
-- BLUF is the first section after the title. Section 4c gives the
-  rules.
-- SYNOPSIS notation: bold for as-is text, italic for replaceable
-  text, `[]` optional, `|` choice, `...` repeat.
-- DESCRIPTION gives the usual case. Options go in OPTIONS.
-  Do not describe internals unless the reader needs them.
-- Mark the version that added a flag: `--apply (since v1.4)`.
-- EXAMPLES are complete and run without change. Show user input
-  distinct from output. Examples do error checking.
+- SYNOPSIS notation: bold as-is text, italic replaceable text, `[]`
+  optional, `|` choice, `...` repeat.
+- DESCRIPTION gives the usual case, and no internals unless the
+  reader needs them. Options go in OPTIONS. Mark the version that
+  added a flag: `--apply (since v1.4)`.
+- EXAMPLES are complete, run without change, show input distinct
+  from output, and do error checking.
+- CAVEATS lists typical misuse. BUGS lists known defects. SEE ALSO:
+  related pages, ordered by section then name, no period.
 - Semantic newlines in source: one sentence per line. Split a long
   sentence at a clause boundary.
-- CAVEATS lists typical misuse. BUGS lists known defects.
-- Numbers: write zero to nine in words and 10 and above in numerals
-  in prose. Numerals always for versions, exit codes, ports, counts
-  in tables, and any number next to a unit. Do not start a sentence
-  with a numeral. Do not write a count twice: "four times", never
-  "four (4) times". Hyphenate a count that modifies a noun: "a
-  10-step procedure". Keep the number and its unit on one line.
-- Casing: sentence case in running text and in headings. Capitalize
-  a common noun only at the start of a sentence.
-- No bold lead-ins and no bold for emphasis. No emoji. No heading
-  over fewer than three sentences.
-- A vertical list needs three or more parallel items or steps. The
-  lead-in ends with a colon. Each item starts uppercase and holds
-  one instruction or one fact.
-- SEE ALSO: related pages, ordered by section then name, no period.
-
-Preferred terms (man-pages): filename, filesystem, hostname, pathname,
-timestamp, timezone, username, superuser, symbolic link, nonzero,
-lowercase, uppercase, user space, run time (noun), run-time (adjective).
-
-Avoid: "OS" → "operating system", "tty" → "terminal",
-"non-root" → "unprivileged user", "manpage" → "man page".
-
-Hyphenate a compound before a noun: "command-line argument",
-"read-only file". No hyphen after multi, non, pre, re, sub:
-nonblocking, subdirectory, reinitialize. Keep the hyphen before a
-capital: non-ASCII.
+- Numbers: zero to nine in words, 10 and above in numerals. Numerals
+  always for versions, exit codes, ports, counts in tables, and a
+  number next to a unit. Do not start a sentence with a numeral. Do
+  not write a count twice: "four times", never "four (4) times".
+  Hyphenate a count before a noun: "a 10-step procedure". Keep a
+  number and its unit on one line.
+- Casing: sentence case in text and headings. Capitalize a common
+  noun only at the start of a sentence.
+- No bold lead-ins, no bold for emphasis, no emoji, no heading over
+  fewer than three sentences.
+- A vertical list needs three or more parallel items or steps, a
+  lead-in that ends with a colon, and one instruction or fact per
+  item, which starts uppercase.
+- Preferred terms and hyphens: `reference/word-choice.md` gives the
+  man-pages terms (filename, hostname, timestamp) and the hyphen
+  rules: a compound before a noun is hyphenated, no
+  hyphen after multi, non, pre, re, and sub, and the hyphen stays
+  before a capital.
 
 ## 4a. Text types
 
-Each type names its mode and its pattern.
-
-- Error message and CLI output. Strict. Say what happened (simple
-  past). Say the cause if known. Give the command or condition that
-  corrects it. "Connection to the database failed. The password for
-  user `app` was not correct. Set `DB_PASSWORD` and connect again."
-- Runbook. Strict, 20-word limit, one instruction per step,
-  condition first. A warning stands before its step.
-- Incident report. Relaxed, simple past only. No "has identified", no
-  "may have impacted". State what is known. Write "unknown" for the
-  rest. Give times in UTC.
-- Commit message and MR description. Imperative subject line, 25-word
-  limit in the body. Delete "this MR aims to".
-- Release notes and CHANGELOG. Section 7. A `Breaking:` entry follows
-  the warning pattern, command first: "Update your calls to
-  `/v2/users`. The `name` field split into `first_name` and
-  `last_name`."
-- Agent instructions (CLAUDE.md, AGENTS.md, subagents, skills).
-  Strict. One instruction per sentence. One word for one action. A
-  condition first. Never "should": a model reads it as optional.
-- UI copy. Strict, hard length limits. Buttons and labels are
-  technical names and are exempt.
-- Marketing text, launch posts, brand voice. Out of scope. scraibe
-  deletes persuasion. Say so and offer to do the docs instead.
+Strict mode: error message and CLI output, runbook, commit message
+and MR description,
+release notes and CHANGELOG, agent instructions, UI copy. Relaxed
+mode: incident report. Out of scope: marketing text, announcements,
+brand voice, because scraibe deletes persuasion. Say so and offer to
+do the docs instead. `reference/text-types.md` gives the pattern of
+each type. Read it before you write a text of that type.
 
 ## 4b. Interface instructions
 
-For steps in a graphical interface or a web console:
-
-- Give steps in the order the reader does them. One action per step.
-  Put multi-step operations in a numbered list.
-- Give the path first, then the action: "Click the Objects tab, and
-  then click Add", not "Click Add on the Objects tab".
-- Write labels of windows, tabs, buttons, fields, and options exactly
-  as the interface shows them, in bold. Keep box, list, check box,
-  and tab as descriptors. Drop other descriptors when the step is
-  clear.
-- Placeholders for input in italics: "Type *hostname*."
-- Keep explanations and notes out of the step list. Put them before
-  or after the list.
-- When there are two ways to do one thing, separate them so the
-  reader cannot read them as two consecutive steps.
-- Mouse instructions before keyboard instructions.
-- Terms: click or select (not click on, choose, pick). Clear a check
-  box (not deselect). Press a key. Type input (not enter). Point to
-  a submenu. Available and unavailable (not active, grayed out).
-  Dialog box. Double-click to open. Right-click for a context menu.
-  "Under *Name*" for a group in a dialog box.
+For steps in a graphical interface or a web console, read
+`reference/interface-instructions.md`: one action per step, the path
+before the action, labels in bold as the interface shows them,
+placeholders in italics, and the terms click, select, press, type.
 
 ## 4c. BLUF
 
 BLUF is the bottom line up front (the conclusion before the detail).
 Every prose document starts with it: README.md, each file under
 docs/, a design note, a runbook, an incident report. The heading is
-`BLUF`, at the level of the other top sections of the document,
-directly after the title. A CHANGELOG, a man page source, and a code
-comment have no BLUF.
+`BLUF`, at the level of the other top sections, directly after the
+title. A CHANGELOG, a man page source, and a code comment have none.
 
-A BLUF is one paragraph in strict mode. It answers three questions,
-in this order:
+A BLUF is one paragraph in strict mode, 80 words and six sentences
+maximum. In this order: what this is and what it does for the reader
+(one sentence), what state it is in (one to three sentences: what
+works, what does not, what changed last), and what the reader must
+do first (one imperative sentence, omitted when there is no action).
 
-1. What is this, and what does it do for the reader. One sentence.
-2. What state is it in: what works, what does not, and what changed
-   last. One to three sentences.
-3. What must the reader do first. One sentence, imperative. Omit it
-   when there is no such action.
+- No list, no code block, no heading, no link. A code span for an
+  identifier is permitted.
+- Every fact in the BLUF also stands in the body. The BLUF adds no
+  fact.
+- Write the state, not a version or a date: "The import works. The
+  scheduler comes next.", not "Version 0.3 added the import."
+- A BLUF goes out of date first, because it states the current
+  state. At the start of every task in a repository, before you
+  write, compare each sentence of the top-level README.md BLUF with
+  the code, the commits since the last tag, and the `[Unreleased]`
+  CHANGELOG entries. If a sentence is not true now, or there is no
+  BLUF, correct it in the same task, also when the task did not name
+  the README. Do the same for each document you change. Report it.
 
-Rules:
-
-- 80 words maximum. Six sentences maximum.
-- No list, no code block, no heading, and no link in the BLUF. A code
-  span for an identifier is permitted.
-- Every fact in the BLUF also stands in the body of the document. The
-  BLUF adds no fact.
-- Write the state, not a version number or a date. "The import works.
-  The scheduler comes next.", not "Version 0.3 added the import."
-- A BLUF goes out of date before the rest of the document, because it
-  states the current state. Read the BLUF of the top-level README.md
-  at the start of every task in a repository, before you write.
-  Compare each sentence with the code, the commits since the last
-  tag, and the `[Unreleased]` entries of the CHANGELOG. If a sentence
-  is not true now, or the README has no BLUF, correct it in the same
-  task, also when the task did not name the README. Do the same for
-  each document you change. Report the change.
-
-`ste-lint.py` tests the presence, the position, the length, and the
-shape of the BLUF (section 9). It cannot test if the BLUF is true.
+`ste-lint.py` tests the shape of the BLUF, not its truth. Keep the
+Usage and Options sections complete: the rules `ghost-command` and
+`ghost-flag` compare each command and flag in the prose with them.
 
 ## 5. Warnings
 
-Put the level word first. Then the command or condition. Then the risk.
-
-- WARNING: a person can be injured.
-- CAUTION: data or equipment can be damaged.
-- NOTE: information only. A note never gives an instruction.
-
-Example:
+Level word first, then the command or condition, then the risk.
+WARNING: a person can be injured. CAUTION: data or equipment can be
+damaged. NOTE: information only, never an instruction.
 
     CAUTION: Do not run `apply` against production without
     `--dry-run` first. It writes all rules immediately.
 
-Place a warning directly before the step or paragraph it applies
-to. When several apply to the same place, order them WARNING,
-CAUTION, NOTE. When two of the same level apply, number them. A
-warning is short but complete.
-
-In a CHANGELOG the level word is `Breaking:`.
+Place a warning directly before the step or paragraph it applies to.
+Several at one place: order WARNING, CAUTION, NOTE, and number two
+of the same level. A warning is short but complete. In a CHANGELOG
+the level word is `Breaking:`.
 
 ## 6. Code comments
 
-Common to all languages:
-
 - A comment says what or why. It does not repeat what the line says.
-- Standalone comment: full sentences, ends with a period.
-- Tag comment (same line as code): short phrase, no period.
+- Standalone comment: full sentences with a period. Tag comment on
+  the code line: short phrase, no period.
 - No history in comments. Git has the history.
 - No TODO without a reason and a reference: `TODO(#142): reason`.
-  Never a person's name or handle as the owner (section 2a).
-- All rules from sections 2 and 3 apply.
+  Never a person's name or handle as the owner.
+- Sections 2 and 3 apply.
+- Three questions for each comment: does it say why, not what? Does
+  the reader need it to understand the code? Does it give a fact the
+  code does not show? Two answers no: delete the comment, or improve
+  the code so that it needs none.
+- A comment is evergreen: no date, no "now", "recently", "new". A
+  constant has its source: a measurement, a limit of a system, a
+  requirement, or an incident.
 
-### Go
-
-Follow go.dev/doc/comment. Run `gofmt` after every change.
-
-- Every exported name has a doc comment. The comment starts with the
-  name: "Package netbox ...", "A Client ...", "Fetch returns ...".
-- Command: the package comment starts with the program name and
-  describes the behavior. Then a `Usage:` block, indented.
-- Func: say what it returns, or what it does when called for the
-  side effect. Boolean result: "reports whether". Name the results
-  when the comment refers to them.
-- Type: say what one instance represents. State concurrency safety
-  if it is stronger than "one goroutine at a time". State the zero
-  value meaning if it is not obvious. Document every exported field,
-  in the type comment or per field.
-- Special cases: list them explicitly, one per line, indented.
-- Do not describe the algorithm in the doc comment. Put that inside
-  the function body.
-- Deprecation: a paragraph `Deprecated: <reason>. Use <X> instead.`
-- Links: `[Name]`, `[pkg.Name]`, `[*pkg.Type]`. URL targets go at the
-  end as `[Text]: URL`.
-- Syntax: blank `//` line between paragraphs. `# Heading` unindented
-  with blank lines around it. Lists indented with `-` or `1.`. Code
-  blocks indented one tab. No nested lists. Do not indent a wrapped
-  prose line.
-
-### Python
-
-- Docstring on every public module, class, and function.
-- First line: one sentence, imperative, ends with a period.
-  Blank line. Then details.
-- Sections `Args:`, `Returns:`, `Raises:` when the function has them.
-
-### Bash
-
-- Header block: name, one-line purpose, usage line, exit codes.
-- One comment line before each function: what it does.
-
-### .NET
-
-- `<summary>` is one sentence. Add `<param>`, `<returns>`,
-  `<exception>` when they exist.
+`reference/comments.md` gives the rules per language: Go doc
+comments (go.dev/doc/comment, `gofmt` after every change, every
+exported name has a comment that starts with the name), Python
+docstrings, Bash headers, .NET XML doc. Read it before you write a
+comment.
 
 ## 7. CHANGELOG
 
 - Format: Keep a Changelog. `## [Unreleased]` at the top.
-- Groups: Added, Changed, Deprecated, Removed, Fixed, Security.
-  Omit empty groups.
-- Entry: one sentence for the operator, not the author.
-  Condition first when the change is conditional.
-- One entry per user-visible change. Internal refactors with no
-  visible effect do not get an entry.
+- Groups: Added, Changed, Deprecated, Removed, Fixed, Security. Omit
+  empty groups.
+- Entry: one sentence for the operator, not the author. Condition
+  first when the change is conditional.
+- One entry per user-visible change. An internal refactor with no
+  visible effect gets no entry.
 - `Breaking:` first, with the migration step.
 - Reference an issue or MR number only when it is in the commit.
 
@@ -510,128 +332,109 @@ These override the dictionary. Do not replace them.
 
 ## 9. Lint
 
-`reference/ste-lint.py` is a deterministic, stdlib-only linter for the
-structural rules. It tests: semicolons, sentence length, soft phrasal
-verbs, nominalization, marketing adjectives, synonym rotation, list
-items that end in "and" or "or", the BLUF section of a README.md
-(section 4c), and, as advice only, passive voice,
-compound tenses, and verbs in -ize, -ise, or -ify (section 2b, item
-10). It never flags hedges. Confidence is content.
+`reference/ste-lint.py` is a deterministic, stdlib-only linter for
+the structural rules. Hard rules fail the run: semicolon,
+long-sentence, phrasal-verb, nominalization, marketing-adjective,
+filler-word (the delete list of section 2), latin-abbreviation,
+contraction, parenthetical-plural, em-dash, numeral-start,
+synonym-rotation, dangling-conjunction, bluf-missing, bluf-position,
+bluf-shape, bluf-long, ghost-command, ghost-flag, and glossary.
+Advisory rules:
+passive-voice, present-perfect, progressive-tense, latin-verb, bold,
+condition-last, ambiguous-this, heading-case. It never flags hedges
+or "should". Confidence is content.
 
-    python3 reference/ste-lint.py FILE...
-    python3 reference/ste-lint.py --json FILE
-    python3 reference/ste-lint.py --baseline 20 FILE   # adopt on old docs
-    python3 reference/ste-lint.py --disable synonym-rotation FILE
+    python3 reference/ste-lint.py [--json] [--baseline N] [--disable RULE,...] [--fix] FILE...
 
 Exit status 1 when hard findings exceed the baseline. Run it on every
-Markdown file you touched. Run it on the extracted comment text of a
-source file when you changed comments.
-
-The linter finds shape, not meaning. A clean run is not a review.
+Markdown file you touched, and on the comment text of a source file
+when you changed comments. `--fix` applies the mechanical fixes. A
+directive in an HTML comment disables a rule for a quotation. A
+glossary `.scraibe.json` at the repository root gives the preferred
+terms, the disabled rules, and the baseline. When a repository has
+no `.scraibe.json`, suggest `reference/scraibe-init.sh` to the user
+once, and do not run it yourself. `evals/run.sh` runs the evaluation
+tasks. `reference/lint.md` gives the details. Read it before you use
+them. The linter finds shape, not meaning. A
+clean run is not a review.
 
 ## 10. AI use
 
-The STEMG white paper on AI (June 2026) gives the direction for this
-section. The white paper is not an approval of this standard.
+The STEMG white paper on AI (June 2026) gives the direction. It is
+not an approval of this standard.
 
-- Every text the agent writes is a draft. A human reviews it and
-  commits it. The agent never commits.
-- Say when AI wrote or changed a text. Use a git trailer, not a note
-  in the document:
+- Every text the agent writes is a draft. A human reviews and commits
+  it. The agent never commits.
+- Say when AI wrote or changed a text, with a git trailer, not a note
+  in the document. The agent gives the line in its report. The human
+  adds it to the commit when they accept the draft:
 
-      Doc-Draft: scraibe/0.3
+      Doc-Draft: scraibe/0.4
 
-  The agent gives this line in its report. The human adds it to the
-  commit when they accept the draft.
-- Keep the decision visible. When the agent changed a word because of
-  the standard, the diff shows it. Do not batch a documentation
-  rewrite into a code commit.
+- Keep the decision visible: the diff shows each word the standard
+  changed. Do not batch a documentation rewrite into a code commit.
 - Do not claim compliance. Write "follows the scraibe standard, which
-  comes from ASD-STE100". Never write "ASD-STE100 compliant" or
-  "STE certified". ASD and the STEMG do not endorse a tool, a checker,
-  or an AI solution, and the standard gives no such status.
-- Give the attribution with the reference. When a text you write names
-  ASD-STE100, include the statement from section 11.
-- Automated checks have limits. `ste-lint.py` tests sentence shape.
-  It does not test meaning or dictionary compliance. The reviewer does.
-- Confidentiality is a policy decision of the organization, not of
-  this standard. Run the agent only where your policy lets the source
-  and its documentation go.
+  comes from ASD-STE100", never "ASD-STE100 compliant" or "STE
+  certified". ASD and the STEMG do not endorse a tool, a checker, or
+  an AI solution, and the standard gives no such status.
+- When a text you write names ASD-STE100, include the statement of
+  section 11. `reference/attribution.md` gives the limits of the
+  automated checks and the note on confidentiality.
 
 ## 11. Attribution
 
-scraibe is a derived guideline. It does not contain the ASD-STE100
-dictionary and does not replace it.
-
 ASD-STE100 Simplified Technical English is a Copyright and a Trade
-Mark of ASD, Brussels, Belgium.
-
-This standard names ASD-STE100 as its source specification. The
-reference is a factual reference. It does not imply an endorsement,
-an approval, a certification, a validation, or an affiliation by ASD
-or by the ASD Simplified Technical English Maintenance Group (STEMG).
-The STEMG does not review, validate, approve, certify, or endorse a
-tool, a rule set, or a service. It did not review this standard.
-
-ASD is the Aerospace, Security and Defence Industries Association of
-Europe. ASD owns the copyright of ASD-STE100 and the European Union
-trade mark 017966390. The copyright rules and the special usage
-rights of ASD hold for the specification and for the dictionary. Do not
-redistribute them, in whole or in part. Get an official copy free of
-charge at https://www.asd-ste100.org.
-
-`reference/ste-lint.py` is from github.com/danyuchn/asd-ste100-skill,
-© 2026 Dustin Yuchen Teng, MIT license. See `reference/LICENSE-ste-lint`.
-The mode split, the claim-strength rule, and the six scan habits in
-this standard also come from that project.
-
-The text-type patterns (section 4a), the delete list (section 2), the
-formatting rules for lists and headings, and the lint hook are from
-github.com/AminBlg/SimpleEnglish, © 2026 AminBlg, MIT license.
-
-The rules for abbreviations, numbers, casing, parallel lists, the
-serial comma, warning placement, and the interface instructions
-(section 4b) are from NASA KSC-DF-107 Revision F, Technical
-Documentation Style Guide (2017), a United States Government work
-approved for public release with unlimited distribution.
-
-man-pages(7) is part of the Linux man-pages project.
-Go doc comment conventions are from https://go.dev/doc/comment.
+Mark of ASD, Brussels, Belgium. scraibe names ASD-STE100 as its
+source specification. The reference is a factual reference. It does
+not imply an endorsement, an approval, a certification, a validation,
+or an affiliation by ASD or by the ASD Simplified Technical English
+Maintenance Group (STEMG), which did not review this standard.
+scraibe does not contain the ASD-STE100 dictionary and does not
+replace it. Get an official copy free of charge at
+https://www.asd-ste100.org. `reference/attribution.md` gives the full
+statement, the copyright rules of ASD, and the sources and licenses
+of the rules, the linter, and the hook.
 
 ## 12. Review checklist
 
-Check every item before you finish.
+Check every item before you finish. Eight habits, each points at a
+word:
 
-Six habits that make text hard to parse. Each one points at a word:
-
-1. Synonym rotation: one thing has several names. Pick one.
+1. Synonym rotation: one thing, several names. Pick one.
 2. Hedge stacking: "it is important to note that this can possibly".
-   State the claim, or delete it. Do not delete a real hedge.
+   State the claim or delete it. Do not delete a real hedge.
 3. Nominalization: "perform an analysis of". Use the verb: "analyze".
 4. Marketing adjectives: seamless, robust, powerful. Delete, or give
    the measurement.
 5. Run-on sentences. One idea per sentence.
-6. Soft phrasal verbs: spin up, reach out, kick off. Use the plain
-   verb: start, contact, begin.
+6. Soft phrasal verbs: spin up, reach out, kick off. Use start,
+   contact, begin.
+7. Sentences that fit any project: "This ensures the system remains
+   secure." True of another project without a change, so it carries
+   no information. Delete it, or write the mechanism: what the code
+   does, when, and at what cost.
+8. Significance instead of mechanism: "robust", "secure", "fast".
+   Give the check, the limit, or the number behind the claim.
 
-Then a grep. Each hit is a rule break or an exemption you can name:
+Then run `ste-lint.py`, then grep for what it does not test:
+`grep -nE "should|would|may|might|could|, making|\([0-9]+\)" FILE`.
+Each hit is a rule break or a named exemption. Then:
 
-    grep -nE "should|would|may|might|could|has been|have been|;|—|, making|\*\*|'|\(s\)|\([0-9]+\)" FILE
-
-Then the rules:
-
-- Every sentence is within the word limit.
-- No semicolon, no contraction, no "e.g.", "i.e.", "etc.".
 - No "-ing" verb outside a technical noun.
 - No passive voice with a known agent.
 - No word from the replace table in section 2.
 - Identifiers, paths, flags, and error strings are verbatim.
-- No organization name, person's name, handle, or email in prose.
-  No real hostname, domain, or address in an example.
+- No organization, person, handle, or email in prose. No real
+  hostname, domain, or address in an example.
 - The reader can do the task with this text only.
 - The top-level README.md has a BLUF, and every sentence in it is
   true now.
+- Every command in the prose is in Usage, and every flag in Usage or
+  Options.
+- Every term of `.scraibe.json` is the one the text uses.
+- Every directive comment covers a quotation or a name.
+- Each comment passes the three questions of section 6.
 - No claim got stronger or weaker. No fact got added.
 - `ste-lint.py` shows no hard finding above the baseline.
-- Go: `gofmt -l` shows no file. `go vet` passes.
+- Go: `gofmt -l` prints nothing, `go vet` passes.
 - The report gives the `Doc-Draft:` trailer.

@@ -25,6 +25,16 @@ GitHub releases distribute the skills and agents, and `ai-skillsctl update` inst
 | ASD-STE100 attribution | Gives the copyright, trade mark, and non-endorsement statement that ASD asks for. | done |
 | scraibe word-choice patterns | Gives the agent 12 patterns for the choice of a word without the dictionary, and an advisory lint rule for Latin verb suffixes. | done |
 | scraibe BLUF | Every prose document starts with a BLUF section (bottom line up front). The agent checks on every task if the BLUF of the top-level `README.md` is true, and `ste-lint.py` tests the shape of the section. | done |
+| scraibe freshness lint | `ste-lint.py` flags a command in the prose that the Usage section does not have, as a deterministic check next to the BLUF review. | done |
+| scraibe lint rules | `ste-lint.py` tests the delete list, Latin abbreviations, contractions, parenthetical plurals, dashes, and a numeral at a sentence start, with directive comments for quotations. | done |
+| scraibe ghost-flag | `ste-lint.py` flags a flag in the prose that the Usage and Options sections do not have. | done |
+| scraibe glossary | `.scraibe.json` at a repository root gives the preferred terms, the disabled rules, and the baseline. | done |
+| scraibe-init.sh | Installs the linter, the glossary, a pre-commit hook, and a CI job in a repository. | done |
+| scraibe reference files | Keeps `SKILL.md` under 500 lines. Seven reference files hold the detail, one level deep. | done |
+| scraibe fix mode | `ste-lint.py --fix` applies the mechanical fixes: semicolons, marketing adjectives, and soft phrasal verbs. | done |
+| scraibe information tests | The standard asks three questions about each comment, and tests each sentence for information that is specific to the project. | done |
+| scraibe evaluations | Four evaluation tasks with fixtures and a runner test the skill after a change to the rules, with and without the skill. | done |
+| scraibe first-run suggestion | The agent and the hook suggest `scraibe-init.sh` once when a repository has no `.scraibe.json`. | done |
 | `scripts/sync-chezmoi.sh` | Copied the skills and agents into the chezmoi source directory. `ai-skillsctl` replaces it. | done |
 
 ## Distribution

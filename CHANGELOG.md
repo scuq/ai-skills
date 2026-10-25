@@ -6,6 +6,37 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-25
+
+### Added
+
+- scuq-scraibe: `ste-lint.py` has the rule `ghost-command`. It flags a command in the prose or in a shell example that the Usage or Synopsis section does not have.
+- scuq-scraibe: `ste-lint.py --fix` changes a semicolon between clauses to a period, removes a marketing adjective, and replaces a soft phrasal verb. It changes nothing else.
+- scuq-scraibe: Section 6 of the standard gives three questions for each comment, and asks for evergreen comments and a source for each constant.
+- scuq-scraibe: Section 12 of the standard has two more review habits. A sentence that fits any project carries no information, and a claim of significance needs the mechanism.
+- scuq-scraibe: `ste-lint.py` tests more rules of the standard. Hard: Latin abbreviations, contractions, parenthetical plurals, em and en dashes, the filler words of section 2, and a numeral at the start of a sentence. Advisory: bold, a condition after the instruction, a sentence that starts with "This", "-ing" verb forms, and title case in a heading.
+- scuq-scraibe: A directive comment such as `<!-- ste-lint: disable-next-line semicolon -->` disables a rule for a line, a block, or a file. A quotation of a bad example can then pass the linter.
+- scuq-scraibe: `ste-lint.py --fix` also writes a contraction in -n't as two words. It removes two filler adverbs, and it replaces five filler phrases and two Latin abbreviations with the plain words.
+- scuq-scraibe: `evals/evals.json` holds four evaluation tasks with fixtures: a README without BLUF, a README with a stale BLUF, Go doc comments, and a CHANGELOG from commits. `evals/run.sh` runs them with `claude -p` in a temporary configuration directory and tests the result with shell checks. `--without-skill` gives the baseline.
+
+- scuq-scraibe: `ste-lint.py` has the rule `ghost-flag`. It flags a flag in the prose or in a shell example that the Usage, Synopsis, Options, and Configuration sections do not have.
+- scuq-scraibe: `ste-lint.py` reads a glossary `.scraibe.json` from the repository root. The rule `glossary` flags the words that the glossary replaces, and the glossary can disable rules and set the baseline.
+- scuq-scraibe: `reference/scraibe-init.sh` installs the linter in a repository. It writes a copy in `.scraibe/`, an empty glossary, a pre-commit hook, and a GitHub Actions job. The hook lints the staged Markdown files, and the job lints every Markdown file.
+
+### Changed
+
+- scuq-scraibe: The scraibe standard is now version 0.4. The commit trailer is `Doc-Draft: scraibe/0.4`.
+- scuq-scraibe: The agent file is shorter. It has the same steps, and it points at the reference files of the skill instead of a copy of their text.
+- scuq-scraibe: When a repository has no `.scraibe.json`, the agent and the hook suggest `scraibe-init.sh` once. They do not run it.
+- scuq-scraibe: `SKILL.md` is under 500 lines and about 5000 tokens. Seven files under `reference/` hold the detail: names, word choice, interface instructions, text types, comments by language, lint details, and attribution. The standard keeps a short rule and a pointer for each.
+- scuq-scraibe: The grep in the review checklist of the standard is shorter. The linter tests the patterns that the grep tested.
+- The CI workflow runs the linter self-test and lints the skills and the agents too.
+- The release bundle no longer has the `evals/` directory of a skill.
+
+### Fixed
+
+- scuq-scraibe: `ste-lint.py` and `--fix` skip an indented code block, as they skip a fenced code block. Before, the lines of a Usage section got sentence findings.
+
 ## [0.4.0] - 2026-10-25
 
 ### Added

@@ -9,7 +9,8 @@
 #   ai-skillsctl-linux-arm64
 #   ai-skillsctl-darwin-amd64
 #   ai-skillsctl-darwin-arm64
-#   ai-skills-bundle.tar.gz     the Git-tracked files of VERSION, skills/, and agents/
+#   ai-skills-bundle.tar.gz     the Git-tracked files of VERSION, skills/, and agents/,
+#                               without the evals/ directory of a skill
 #   SHA256SUMS                  the SHA-256 sums of the other files
 #
 # Exit status:
@@ -54,7 +55,7 @@ fi
 
 # A fixed owner, order, and time give the same archive for the same commit.
 mtime=$(git log -1 --format=%ct)
-git ls-files -z VERSION skills agents |
+git ls-files -z VERSION skills agents ':!skills/*/evals/**' |
   tar --null --files-from=- --sort=name --owner=0 --group=0 --numeric-owner \
     --mtime="@${mtime}" -cf - |
   gzip -n >dist/ai-skills-bundle.tar.gz

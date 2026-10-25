@@ -96,7 +96,20 @@ def main():
         f"scraibe: {target.name} has {len(hard)} hard lint findings "
         f"({summary}). Correct them in the file you just wrote, then continue.\n"
     )
+    if not glossary_near(target):
+        sys.stderr.write(
+            "scraibe: this repository has no .scraibe.json. Suggest "
+            "~/.claude/skills/scuq-scraibe/reference/scraibe-init.sh to the user once.\n"
+        )
     return 2
+
+
+def glossary_near(target):
+    """Report whether a .scraibe.json exists in the directory of TARGET or above."""
+    for directory in [target.parent, *target.parent.parents]:
+        if (directory / ".scraibe.json").is_file():
+            return True
+    return False
 
 
 if __name__ == "__main__":

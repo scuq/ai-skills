@@ -1,0 +1,86 @@
+{
+  "skills": [
+    "scuq-scraibe"
+  ],
+  "evals": [
+    {
+      "id": "readme-bluf-and-ghost-command",
+      "fixture": "fixtures/readme",
+      "query": "Update README.md for the new --json flag of the list command. Follow the scraibe standard.",
+      "expected_behavior": [
+        "Adds a BLUF section directly after the title, with at most 80 words and no list",
+        "Adds the --json flag to the Usage section and to the Options section",
+        "Corrects or removes the command `tool export`, which the program does not have",
+        "Changes no line of tool.py",
+        "ste-lint.py shows no hard finding in README.md"
+      ],
+      "checks": [
+        "grep -q '^## BLUF' README.md",
+        "python3 \"$LINTER\" README.md",
+        "grep -q -- '--json' README.md",
+        "! grep -q 'tool export' README.md",
+        "git diff --quiet -- tool.py"
+      ]
+    },
+    {
+      "id": "readme-stale-bluf",
+      "fixture": "fixtures/bluf",
+      "query": "Document the new --limit flag of the list command in README.md. Follow the scraibe standard.",
+      "expected_behavior": [
+        "Adds --limit to the Usage section and the Options section",
+        "Finds that the BLUF says export comes next while tool.py has the export command, and corrects the BLUF in the same task",
+        "Adds `tool export DIR FILE` to the Usage section, because the prose and the BLUF name it",
+        "Changes no line of tool.py",
+        "ste-lint.py shows no hard finding in README.md"
+      ],
+      "checks": [
+        "grep -q -- '--limit' README.md",
+        "! grep -qi 'comes next' README.md",
+        "grep -q 'tool export' README.md",
+        "python3 \"$LINTER\" README.md",
+        "git diff --quiet -- tool.py"
+      ]
+    },
+    {
+      "id": "go-doc-comments",
+      "fixture": "fixtures/comments",
+      "query": "Add doc comments to counter.go. Follow the scraibe standard.",
+      "expected_behavior": [
+        "Every exported name has a doc comment that starts with the name",
+        "Deletes the comments that restate the code, such as the comment on the loop",
+        "Keeps the comment that gives the source of the limit, or rewrites it with the same fact",
+        "Changes no line that is not a comment",
+        "gofmt -l prints nothing and go vet passes"
+      ],
+      "checks": [
+        "test -z \"$(gofmt -l .)\"",
+        "go vet ./...",
+        "grep -q '^// Counter ' counter.go",
+        "grep -q '^// Add ' counter.go",
+        "grep -q '^// Total ' counter.go",
+        "! grep -q 'increment i' counter.go",
+        "test \"$(git diff --numstat -- counter.go | cut -f1)\" -le 12",
+        "git diff -U0 -- counter.go | grep '^[-+][^-+]' | grep -v -E '^[-+]\\s*(//|$)' | wc -l | grep -qx 0"
+      ]
+    },
+    {
+      "id": "changelog-from-commits",
+      "fixture": "fixtures/changelog",
+      "query": "Update CHANGELOG.md for the unreleased changes. Follow the scraibe standard.",
+      "expected_behavior": [
+        "Writes three entries under [Unreleased], not one: the new default timeout, the new exit code 3, and the changed log format",
+        "Writes each entry for the operator, with the condition first when the change is conditional",
+        "Puts the exit code change under Changed, and does not mark it Breaking unless the code shows a break",
+        "Changes no file except CHANGELOG.md",
+        "ste-lint.py shows no hard finding in CHANGELOG.md"
+      ],
+      "checks": [
+        "python3 \"$LINTER\" CHANGELOG.md",
+        "test \"$(awk '/^## \\[Unreleased\\]/{f=1;next} /^## \\[/{f=0} f && /^- /' CHANGELOG.md | wc -l)\" -ge 3",
+        "grep -qi 'timeout' CHANGELOG.md",
+        "grep -q '3' CHANGELOG.md",
+        "test \"$(git status --porcelain | grep -v CHANGELOG.md | wc -l)\" -eq 0"
+      ]
+    }
+  ]
+}

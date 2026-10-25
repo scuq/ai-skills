@@ -9,21 +9,51 @@ The BLUF rules (bluf-missing, bluf-position, bluf-shape, bluf-long) test
 the shape of the BLUF section of SKILL.md section 4c. They cannot test if
 the BLUF is true.
 
+The ghost-command rule compares each command in prose and in shell code
+fences with the Usage or Synopsis section. A command that the section does
+not have is a hard finding. The ghost-flag rule does the same for each
+flag, against the Usage, Synopsis, Options, and Configuration sections.
+Both rules test presence, not behavior.
+
+A repository can have a glossary .scraibe.json at its root, found from the
+directory of the file upward:
+    {"terms": {"config file": ["configuration file"]}, "disable": ["bold"], "baseline": 0}
+"terms" maps a preferred term to the words that the rule glossary flags.
+"disable" names rules the repository does not use. "baseline" is the
+default for --baseline.
+
+--fix changes semicolons to periods, deletes the marketing adjectives and
+the fillers "simply" and "easily", expands the contractions in -n't, and
+replaces the phrasal verbs of PHRASAL_FIXES and the phrases of
+PHRASE_FIXES. It changes nothing else, and it does not touch code fences
+or inline code. Read the diff after a run.
+
+A directive comment disables a rule for a line, a block, or a file:
+    <!-- ste-lint: disable-next-line semicolon,filler-word -->
+    <!-- ste-lint: disable-line em-dash -->
+    <!-- ste-lint: disable marketing-adjective --> ... <!-- ste-lint: enable marketing-adjective -->
+    <!-- ste-lint: disable-file bold -->
+
 Usage:
     ste-lint.py FILE [FILE ...]
     echo "text" | ste-lint.py [--json]
     ste-lint.py --baseline 5 FILE      # pass unless hard violations exceed 5
     ste-lint.py --disable passive-voice,present-perfect FILE
+    ste-lint.py --fix FILE             # apply the mechanical fixes, then lint
+    ste-lint.py --no-glossary FILE     # ignore the .scraibe.json of the repository
+    echo "text" | ste-lint.py --fix    # print the fixed text
     ste-lint.py --selftest
 
 Exit 1 when hard ("advisory-free") violations exceed the baseline (default 0).
-Advisory findings (passive voice, compound tenses, Latin verb suffixes) never
-fail the run.
+Advisory findings (passive voice, compound tenses, Latin verb suffixes, bold,
+progressive tense, a condition after the instruction, "This" at the start of
+a sentence, title case in a heading) never fail the run.
 
 ASD-STE100 Simplified Technical English is a Copyright and a Trade Mark of ASD,
 Brussels, Belgium. ASD and the STEMG do not endorse this linter.
 """
 import json
+import os
 import re
 import sys
 
@@ -51,6 +81,27 @@ RULES = [
      # approved. Non-verb spellings that share the ending are excluded.
      re.compile(r"\b(?!(?:otherwise|likewise|clockwise|counterclockwise|anticlockwise|precise|concise|premise|premises|promise|promises|exercise|exercises|expertise|enterprise|enterprises|franchise|merchandise|surprise|surprises|sunrise|cruise|bruise|disguise|paradise|treatise|demise|reprise)\b)[a-z]{3,}(?:iz|is)(?:e|es|ed|ing)\b|\b[a-z]{3,}if(?:y|ies|ied|ying)\b", re.I),
      "Verb with a Latin suffix. Most of these are not approved in STE. Use the plain verb, unless the word is a technical verb."),
+    ("latin-abbreviation", "advisory-free",
+     re.compile(r"\b(?:e\.g\.|i\.e\.|etc\.?)(?=[\s,;:)]|$)", re.I),
+     'Latin abbreviation. Write "for example", "that is", or "and so on".'),
+    ("contraction", "advisory-free",
+     re.compile(r"(?!Let['\u2019]s Encrypt)\b(?:\w+n['\u2019]t|it['\u2019]s|that['\u2019]s|there['\u2019]s|here['\u2019]s|what['\u2019]s|let['\u2019]s|who['\u2019]s|where['\u2019]s|how['\u2019]s|\w+['\u2019]re|\w+['\u2019]ve|\w+['\u2019]ll|(?:I|you|we|they)['\u2019]d|I['\u2019]m)\b", re.I),
+     "Contraction. Write the two words."),
+    ("parenthetical-plural", "advisory-free",
+     re.compile(r"\w\(s\)"),
+     'Parenthetical plural. Write the plural, or "one or more".'),
+    ("em-dash", "advisory-free",
+     re.compile(r"[\u2014\u2013]"),
+     "Em or en dash. Use a comma, a colon, or a period."),
+    ("filler-word", "advisory-free",
+     re.compile(r"\b(?:simply|just|easily|powerful|comprehensive|leverages?|leveraging|crucial|furthermore|moreover)\b|\bin order to\b|\bit is worth noting\b|\bis designed to\b|\baims? to\b|\bout of the box\b|\bunder the hood\b|\bin conclusion\b", re.I),
+     "Word without a fact (SKILL.md section 2 delete list). Delete it, or give the measurement."),
+    ("bold", "advisory",
+     re.compile(r"\*\*[^*\n]+\*\*"),
+     "Bold. Use it only for an interface label (section 4b). No lead-in, no emphasis."),
+    ("progressive-tense", "advisory",
+     re.compile(r"\b(?:am|is|are|was|were|be|been|being)\s+(?!(?:nothing|something|anything|everything|morning|evening|during|according|missing|following|existing|remaining|pending|outstanding|interesting|willing|thing|string|king|ring|spring|ceiling|building|encoding|logging|routing)\b)[a-z]+ing\b", re.I),
+     'Possible "-ing" verb form. Use the simple present or past, unless the word is a technical noun.'),
     ("present-perfect", "advisory",
      # modal + perfect infinitive ("may have failed") is a protected hedge, not present perfect
      re.compile(r"(?<!\bmay )(?<!\bmight )(?<!\bcould )(?<!\bshould )(?<!\bwould )(?<!\bmust )\b(has|have|had)\s+(?:been\s+)?\w+(?:ed|en)\b", re.I),
@@ -86,6 +137,54 @@ HEADING = re.compile(r"^(?P<level>#{1,6})\s+(?P<text>.*?)\s*#*\s*$")
 README_NAMES = {"readme.md"}
 BLUF_MAX_WORDS = 80
 BLUF_MAX_SENTENCES = 6
+USAGE_HEADINGS = {"usage", "synopsis"}
+COMMAND_WORD = re.compile(r"^[a-z][a-z0-9._-]*$")
+SHELL_FENCE = re.compile(r"^(```|~~~)\s*(sh|bash|shell|zsh|console)\b", re.I)
+SHELL_SPLIT = re.compile(r"\s*(?:&&|\|\||\||;)\s*")
+
+# --fix: the mechanical rewrites. Each is (pattern, replacement). A
+# replacement can be a function. The fixes run outside code fences and
+# outside inline code. They change nothing else.
+PHRASAL_FIXES = {
+    "spin up": "start", "spins up": "starts", "spinning up": "starting",
+    "spun up": "started",
+    "reach out": "contact", "reaches out": "contacts",
+    "reaching out": "contacting", "reached out": "contacted",
+    "kick off": "start", "kicks off": "starts", "kicking off": "starting",
+    "kicked off": "started",
+    "dive into": "read", "dives into": "reads", "diving into": "reading",
+    "dived into": "read", "dove into": "read",
+    "circle back": "return", "circles back": "returns",
+    "circling back": "returning", "circled back": "returned",
+    "touch base": "contact", "touches base": "contacts",
+    "touching base": "contacting", "touched base": "contacted",
+}
+PHRASE_FIXES = {
+    "in order to": "to", "under the hood": "internally",
+    "out of the box": "by default", "furthermore": "also", "moreover": "also",
+    "e.g.": "for example", "i.e.": "that is",
+}
+HTML_ENTITY = re.compile(r"&[#A-Za-z0-9]+;")
+HTML_COMMENT = re.compile(r"<!--.*?-->")
+DIRECTIVE = re.compile(
+    r"<!--\s*ste-lint:\s*(?P<kind>disable-next-line|disable-line|disable-file|disable|enable)\b(?P<rules>[\w\s,-]*)-->"
+)
+IMPERATIVE = re.compile(
+    r"^(?:Run|Set|Use|Open|Click|Type|Install|Start|Stop|Add|Remove|Delete|Create|Write|Edit|Check|Make|Press|"
+    r"Select|Enter|Change|Copy|Move|Restart|Enable|Disable|Configure|Apply|Commit|Push|Pull|Call|Pass|Put|Send|"
+    r"Read|Save|Close|Build|Deploy|Mount|Update|Upgrade|Rename|Replace|Specify|Provide|Verify|Do|Give|Keep|"
+    r"Leave|Omit|Export|Import|Load|Return|Wait|Repeat|Store|Print|Define|Name|List|Show|Test|Clear|Reset|Turn)\b"
+)
+CONDITION = re.compile(r"\b(?:if|when|unless)\b", re.I)
+AMBIGUOUS_THIS = re.compile(
+    r"^This (?:is|was|ensures|means|lets|makes|causes|gives|returns|helps|allows|enables|happens|results|requires|"
+    r"prevents|keeps|works|runs|avoids|adds|removes|creates|uses|does|has|can|must|will|should|may|might|could)\b"
+)
+CAPITALIZED_WORD = re.compile(r"^[A-Z][a-z]+[,:]?$")
+INDENTED_CODE = re.compile(r"^(?: {4}|\t)")
+OPTIONS_HEADINGS = {"options", "configuration"}
+FLAG = re.compile(r"(?<![\w-])(--?[A-Za-z][\w-]*)")
+GLOSSARY_NAME = ".scraibe.json"
 
 
 def _word_re(base):
@@ -245,20 +344,93 @@ def _dangling_conjunction_findings(text, filename):
     return findings
 
 
-def _headings(lines):
-    """Return (index, level, text) for each ATX heading outside a code fence."""
-    found = []
+def _code_lines(lines):
+    """Return the 0-based indices of the lines that are code.
+
+    Code is a fenced block, with its fence lines, or an indented block: a
+    line indented by four spaces or a tab after a blank line, when the
+    text before the blank line is not a list. A list continues in an
+    indented paragraph, so that paragraph is prose.
+    """
+    code = set()
     in_fence = False
+    in_indented = False
+    previous_blank = True
+    in_list = False
     for index, raw in enumerate(lines):
-        if CODE_FENCE.match(raw.strip()):
+        stripped = raw.strip()
+        if CODE_FENCE.match(stripped):
             in_fence = not in_fence
+            in_indented = False
+            previous_blank = False
+            in_list = False
+            code.add(index)
             continue
         if in_fence:
+            code.add(index)
+            continue
+        if not stripped:
+            previous_blank = True
+            continue
+        indented = bool(INDENTED_CODE.match(raw))
+        if in_indented and indented:
+            code.add(index)
+            continue
+        in_indented = False
+        if indented and previous_blank and not in_list:
+            in_indented = True
+            previous_blank = False
+            code.add(index)
+            continue
+        previous_blank = False
+        if LIST_ITEM_START.match(raw):
+            in_list = True
+        elif not raw.startswith((" ", "\t")):
+            in_list = False
+    return code
+
+
+def _headings(lines):
+    """Return (index, level, text) for each ATX heading outside code."""
+    found = []
+    code = _code_lines(lines)
+    for index, raw in enumerate(lines):
+        if index in code:
             continue
         m = HEADING.match(raw)
         if m:
             found.append((index, len(m.group("level")), m.group("text")))
     return found
+
+
+def load_glossary(start):
+    """Return the glossary of the repository of START, and its path.
+
+    The glossary is the file .scraibe.json in the directory of START or
+    in a parent directory. Without one, the result is (None, None).
+    """
+    directory = os.path.abspath(start)
+    if not os.path.isdir(directory):
+        directory = os.path.dirname(directory)
+    while True:
+        candidate = os.path.join(directory, GLOSSARY_NAME)
+        if os.path.isfile(candidate):
+            with open(candidate, encoding="utf-8") as handle:
+                return json.load(handle), candidate
+        parent = os.path.dirname(directory)
+        if parent == directory:
+            return None, None
+        directory = parent
+
+
+def _glossary_patterns(glossary):
+    """Return [(preferred, compiled pattern)] for the terms of a glossary."""
+    patterns = []
+    for preferred, synonyms in (glossary or {}).get("terms", {}).items():
+        for synonym in synonyms:
+            words = r"\s+".join(re.escape(w) for w in synonym.split())
+            patterns.append((preferred, re.compile(r"\b" + words + r"(?:s|es|ed|ing)?\b", re.I)))
+    return patterns
 
 
 def _bluf_findings(text, filename):
@@ -330,20 +502,315 @@ def _bluf_findings(text, filename):
     return findings
 
 
-def lint(text, filename="<stdin>"):
-    findings = []
-    words_total = 0
-    in_fence = False
+def _command_path(tokens):
+    """Return the command paths in a usage or shell line.
+
+    A path is the run of command words before the first placeholder,
+    option, or value: ("vud", "team", "add"). A token "show|approve"
+    branches into two paths. The result is a list of tuples. It is empty
+    when the first token is not a command word.
+    """
+    paths = [()]
+    for token in tokens:
+        parts = token.split("|") if "|" in token else [token]
+        if not all(COMMAND_WORD.match(part) for part in parts):
+            break
+        paths = [path + (part,) for path in paths for part in parts]
+    return [path for path in paths if path]
+
+
+def _usage_commands(lines):
+    """Return the command paths of the Usage or Synopsis section.
+
+    The section is the text under a heading "Usage" or "Synopsis" up to
+    the next heading. Its commands are the lines in code fences and the
+    lines indented by four spaces or a tab.
+    """
+    commands = set()
+    headings = _headings(lines)
+    for position, (index, _, text) in enumerate(headings):
+        if text.strip().lower() not in USAGE_HEADINGS:
+            continue
+        end = headings[position + 1][0] if position + 1 < len(headings) else len(lines)
+        in_fence = False
+        for raw in lines[index + 1:end]:
+            if CODE_FENCE.match(raw.strip()):
+                in_fence = not in_fence
+                continue
+            if not in_fence and not raw.startswith(("    ", "\t")):
+                continue
+            tokens = raw.strip().split()
+            if tokens and tokens[0] == "$":
+                tokens = tokens[1:]
+            for path in _command_path(tokens):
+                commands.add(path)
+    return commands
+
+
+def _section_ranges(lines, names):
+    """Return (start, end) line indices of each section whose heading is in NAMES."""
+    headings = _headings(lines)
+    ranges = []
+    for position, (index, _, text) in enumerate(headings):
+        if text.strip().lower() in names:
+            end = headings[position + 1][0] if position + 1 < len(headings) else len(lines)
+            ranges.append((index, end))
+    return ranges
+
+
+def _usage_flags(lines):
+    """Return the flags of the Usage, Synopsis, Options, and Configuration sections."""
+    flags = set()
+    for start, end in _section_ranges(lines, USAGE_HEADINGS | OPTIONS_HEADINGS):
+        for raw in lines[start + 1:end]:
+            flags.update(FLAG.findall(raw))
+    return flags
+
+
+def _ghost_command_findings(text, filename):
+    """Flag a command or a flag in prose that the Usage section does not have.
+
+    The rule tests the inline code spans outside the Usage and Options
+    sections, and the lines of shell code fences. A span counts when its
+    first word is a program of the Usage section, or when it starts with
+    a dash. Its command path must be a prefix of a usage command, or a
+    usage command must be a prefix of it (`ghost-command`). Each of its
+    flags must be in the Usage, Synopsis, Options, or Configuration
+    section (`ghost-flag`). A file without a Usage section gets no
+    finding, and a file whose sections have no flag gets no flag finding.
+    """
     lines = text.splitlines()
-    table_cells = _markdown_table_cells(lines)
-    # first occurrence of each synonym-group member: (group_idx, base) -> (line, col, match)
-    seen_synonyms = {}
-    for lineno, raw_line in enumerate(lines, 1):
-        if CODE_FENCE.match(raw_line.strip()):
+    commands = _usage_commands(lines)
+    if not commands:
+        return []
+    programs = {path[0] for path in commands}
+    flags = _usage_flags(lines)
+
+    def known(path):
+        return any(path[:len(c)] == c or c[:len(path)] == path for c in commands)
+
+    findings = []
+
+    def test(tokens, lineno, col):
+        if not tokens:
+            return
+        if tokens[0] in programs:
+            for path in _command_path(tokens):
+                if not known(path):
+                    findings.append({"file": filename, "line": lineno, "col": col,
+                                     "rule": "ghost-command", "level": "advisory-free",
+                                     "match": " ".join(path),
+                                     "message": f"The Usage section has no command `{' '.join(path)}`. "
+                                                "Add it there, or correct the text."})
+        elif not tokens[0].startswith("-"):
+            return
+        if not flags:
+            return
+        for token in tokens:
+            for flag in FLAG.findall(token):
+                if flag not in flags:
+                    findings.append({"file": filename, "line": lineno, "col": col,
+                                     "rule": "ghost-flag", "level": "advisory-free",
+                                     "match": flag,
+                                     "message": f"The Usage and Options sections have no flag `{flag}`. "
+                                                "Add it there, or correct the text."})
+
+    usage_ranges = _section_ranges(lines, USAGE_HEADINGS | OPTIONS_HEADINGS)
+    in_fence = False
+    shell_fence = False
+    for lineno, raw in enumerate(lines, 1):
+        stripped = raw.strip()
+        if CODE_FENCE.match(stripped):
+            if not in_fence:
+                shell_fence = bool(SHELL_FENCE.match(stripped))
             in_fence = not in_fence
             continue
-        if in_fence:
+        if any(start <= lineno - 1 < end for start, end in usage_ranges):
             continue
+        if in_fence:
+            if shell_fence:
+                for segment in SHELL_SPLIT.split(raw):
+                    tokens = segment.split()
+                    if tokens and tokens[0] == "$":
+                        tokens = tokens[1:]
+                    test(tokens, lineno, 1)
+            continue
+        for m in INLINE_CODE.finditer(raw):
+            test(m.group(0).strip("`").split(), lineno, m.start() + 1)
+    return findings
+
+
+def _fix_segment(segment):
+    """Apply the mechanical fixes to one piece of prose."""
+    count = 0
+
+    def semicolon(m):
+        nonlocal count
+        count += 1
+        return ". " + m.group(1).upper()
+
+    # A semicolon between two clauses becomes a period. An HTML entity
+    # keeps its semicolon.
+    pieces = []
+    last = 0
+    for entity in HTML_ENTITY.finditer(segment):
+        pieces.append(re.sub(r";\s+([a-z])", semicolon, segment[last:entity.start()]))
+        pieces.append(entity.group(0))
+        last = entity.end()
+    pieces.append(re.sub(r";\s+([a-z])", semicolon, segment[last:]))
+    segment = "".join(pieces)
+
+    def adjective(m):
+        nonlocal count
+        count += 1
+        return ""
+
+    segment = re.sub(
+        r" ?\b(seamless(?:ly)?|robust(?:ly)?|cutting-edge|effortless(?:ly)?|blazing[- ]fast|world-class|state-of-the-art)\b",
+        adjective, segment, flags=re.I)
+
+    def phrasal(m):
+        nonlocal count
+        count += 1
+        plain = PHRASAL_FIXES[m.group(0).lower()]
+        return plain.capitalize() if m.group(0)[0].isupper() else plain
+
+    pattern = r"\b(" + "|".join(re.escape(k) for k in sorted(PHRASAL_FIXES, key=len, reverse=True)) + r")\b"
+    segment = re.sub(pattern, phrasal, segment, flags=re.I)
+
+    def phrase(m):
+        nonlocal count
+        count += 1
+        plain = PHRASE_FIXES[m.group(0).lower()]
+        return plain.capitalize() if m.group(0)[0].isupper() else plain
+
+    pattern = r"\b(" + "|".join(re.escape(k) for k in sorted(PHRASE_FIXES, key=len, reverse=True)) + r")(?=[\s,;:)]|$)"
+    segment = re.sub(pattern, phrase, segment, flags=re.I)
+
+    def filler(m):
+        nonlocal count
+        count += 1
+        return ""
+
+    segment = re.sub(r" ?\b(?:simply|easily)\b", filler, segment, flags=re.I)
+
+    def contraction(m):
+        nonlocal count
+        count += 1
+        word = m.group(1)
+        if word.lower() == "ca":
+            return word + "nnot"
+        if word.lower() == "wo":
+            return ("W" if word[0].isupper() else "w") + "ill not"
+        return word + " not"
+
+    segment = re.sub(r"\b(\w+)n['\u2019]t\b", contraction, segment)
+    return segment, count
+
+
+def fix(text):
+    """Return the text with the mechanical fixes applied, and the count.
+
+    The fixes run outside code fences and outside inline code. They
+    change semicolons, the marketing adjectives, and the phrasal verbs of
+    PHRASAL_FIXES. They change nothing else. Read the diff after a run.
+    """
+    out = []
+    total = 0
+    code_lines = _code_lines(text.splitlines())
+    for index, raw in enumerate(text.splitlines(keepends=True)):
+        if index in code_lines:
+            out.append(raw)
+            continue
+        pieces = []
+        last = 0
+        for code in INLINE_CODE.finditer(raw):
+            fixed, n = _fix_segment(raw[last:code.start()])
+            total += n
+            pieces.append(fixed)
+            pieces.append(code.group(0))
+            last = code.end()
+        fixed, n = _fix_segment(raw[last:])
+        total += n
+        pieces.append(fixed)
+        out.append("".join(pieces))
+    return "".join(out), total
+
+
+def _suppressions(lines):
+    """Return the rules that a directive comment disables on each line.
+
+    Directives are HTML comments:
+        <!-- ste-lint: disable-next-line RULE[,RULE] -->
+        <!-- ste-lint: disable-line RULE -->     on the line itself
+        <!-- ste-lint: disable RULE -->          until the matching enable
+        <!-- ste-lint: enable RULE -->
+        <!-- ste-lint: disable-file RULE -->
+    A directive without a rule name disables every rule. The result maps
+    a 1-based line number to a set of rule ids, or {"*"} for every rule.
+    """
+    file_rules = set()
+    block_rules = set()
+    next_rules = set()
+    result = {}
+    for lineno, raw in enumerate(lines, 1):
+        line_rules = set(block_rules) | set(next_rules)
+        next_rules = set()
+        for m in DIRECTIVE.finditer(raw):
+            rules = {r for r in re.split(r"[\s,]+", m.group("rules").strip()) if r} or {"*"}
+            kind = m.group("kind")
+            if kind == "disable-file":
+                file_rules |= rules
+            elif kind == "disable-next-line":
+                next_rules |= rules
+            elif kind == "disable-line":
+                line_rules |= rules
+            elif kind == "disable":
+                block_rules |= rules
+                line_rules |= rules
+            elif kind == "enable":
+                block_rules -= rules
+                if "*" in rules:
+                    block_rules = set()
+        if line_rules or file_rules:
+            result[lineno] = line_rules | file_rules
+    return result
+
+
+def _heading_case_findings(lines, filename):
+    """Flag a heading in title case: two or more capitalized words after the first."""
+    findings = []
+    for index, _, text in _headings(lines):
+        words = INLINE_CODE.sub("", text).split()[1:]
+        capitals = [w for w in words if CAPITALIZED_WORD.match(w)]
+        if len(capitals) >= 2:
+            findings.append({"file": filename, "line": index + 1, "col": 1,
+                             "rule": "heading-case", "level": "advisory",
+                             "match": " ".join(capitals),
+                             "message": "Possible title case. Use sentence case in a heading, unless the words are names."})
+    return findings
+
+
+def lint(text, filename="<stdin>", glossary=None):
+    findings = []
+    words_total = 0
+    lines = text.splitlines()
+    code = _code_lines(lines)
+    table_cells = _markdown_table_cells(lines)
+    glossary_patterns = _glossary_patterns(glossary)
+    # first occurrence of each synonym-group member: (group_idx, base) -> (line, col, match)
+    seen_synonyms = {}
+    # A hard-wrapped paragraph puts the middle of a sentence at the start
+    # of a line. The sentence rules skip the first piece of such a line.
+    previous_prose = ""
+    for lineno, raw_line in enumerate(lines, 1):
+        if (lineno - 1) in code:
+            previous_prose = ""
+            continue
+        raw_line = HTML_COMMENT.sub("", raw_line)
+        continuation = bool(previous_prose.strip()) and not re.search(r"[.!?:]\s*$", previous_prose)
+        previous_prose = raw_line
+        in_table = (lineno - 1) in table_cells
         segments = table_cells.get(lineno - 1, [(raw_line, 0)])
         for segment, source_column in segments:
             line = INLINE_CODE.sub("", segment)
@@ -354,7 +821,16 @@ def lint(text, filename="<stdin>"):
                                      "col": source_column + m.start() + 1,
                                      "rule": rule_id, "level": level,
                                      "match": m.group(0), "message": msg})
+            for preferred, pattern in glossary_patterns:
+                for m in pattern.finditer(line):
+                    findings.append({"file": filename, "line": lineno,
+                                     "col": source_column + m.start() + 1,
+                                     "rule": "glossary", "level": "advisory-free",
+                                     "match": m.group(0),
+                                     "message": f'Write "{preferred}", not "{m.group(0)}" ({GLOSSARY_NAME}).'})
             for gi, group in enumerate(SYNONYM_GROUPS):
+                if HEADING.match(raw_line):
+                    break  # a heading word is a label, not a choice of verb
                 for base in group:
                     if (gi, base) in seen_synonyms:
                         continue
@@ -363,14 +839,42 @@ def lint(text, filename="<stdin>"):
                         seen_synonyms[(gi, base)] = (
                             lineno, source_column + m.start() + 1, m.group(0)
                         )
-            for sent in re.split(r"(?<=[.!?])\s+", line):
-                n = len(sent.split())
+            prose = line
+            item = LIST_ITEM_START.match(line)
+            if item:
+                prose = item.group("body")
+            for position, sent in enumerate(re.split(r"(?<=[.!?])\s+", prose)):
+                sent = sent.strip()
+                # SKILL.md section 3: text in parentheses counts as one word.
+                # A code span was removed above, so a comma it leaves is not a word.
+                n = len([w for w in re.sub(r"\([^()]*\)", "x", sent).split() if re.search(r"\w", w)])
+                starts_sentence = not (position == 0 and continuation and not item)
                 if n > MAX_WORDS:
                     findings.append({"file": filename, "line": lineno,
                                      "col": source_column + 1,
                                      "rule": "long-sentence", "level": "advisory-free",
                                      "match": f"{n} words",
                                      "message": f"Sentence has {n} words (cap {MAX_WORDS}). Split it."})
+                if not starts_sentence:
+                    continue
+                if n >= 2 and not in_table and sent[0].isdigit():
+                    findings.append({"file": filename, "line": lineno,
+                                     "col": source_column + 1,
+                                     "rule": "numeral-start", "level": "advisory-free",
+                                     "match": sent.split()[0],
+                                     "message": "Sentence starts with a numeral. Rewrite the sentence, or write the number in words."})
+                if IMPERATIVE.match(sent) and CONDITION.search(sent):
+                    findings.append({"file": filename, "line": lineno,
+                                     "col": source_column + 1,
+                                     "rule": "condition-last", "level": "advisory",
+                                     "match": sent[:40],
+                                     "message": "Possible condition after the instruction. Write the condition first."})
+                if AMBIGUOUS_THIS.match(sent):
+                    findings.append({"file": filename, "line": lineno,
+                                     "col": source_column + 1,
+                                     "rule": "ambiguous-this", "level": "advisory",
+                                     "match": sent[:40],
+                                     "message": 'Sentence starts with "This". Name the thing it refers to.'})
     # synonym rotation: flag each member after the first, at its first occurrence
     for gi, group in enumerate(SYNONYM_GROUPS):
         present = [(seen_synonyms[(gi, b)], b) for b in group if (gi, b) in seen_synonyms]
@@ -384,6 +888,11 @@ def lint(text, filename="<stdin>"):
                                  "message": f"'{base}' and '{first_base}' name the same action. Pick one and use it every time."})
     findings.extend(_dangling_conjunction_findings(text, filename))
     findings.extend(_bluf_findings(text, filename))
+    findings.extend(_ghost_command_findings(text, filename))
+    findings.extend(_heading_case_findings(lines, filename))
+    suppressed = _suppressions(lines)
+    findings = [f for f in findings
+                if not ({"*", f["rule"]} & suppressed.get(f["line"], set()))]
     findings.sort(key=lambda f: (f["line"], f["col"]))
     return findings, words_total
 
@@ -513,6 +1022,9 @@ def selftest():
     findings, _ = lint("Check the config file. Then verify the output. Verify twice.")
     rot = [f for f in findings if f["rule"] == "synonym-rotation"]
     assert len(rot) == 1 and "'verify' and 'check'" in rot[0]["message"], rot
+    # a heading word is not a synonym choice
+    findings, _ = lint("### Fixed\n\nThe tool corrects the path.\n")
+    assert not any(f["rule"] == "synonym-rotation" for f in findings), findings
     # single consistent term: no flag
     findings, _ = lint("Check the config. Check the output.")
     assert not any(f["rule"] == "synonym-rotation" for f in findings)
@@ -536,6 +1048,100 @@ def selftest():
     assert [f["rule"] for f in findings if f["rule"].startswith("bluf")] == ["bluf-long"], findings
     findings, _ = lint("# t\n\n## BLUF\n\n" + "One. " * 7 + "\n")
     assert [f["rule"] for f in findings if f["rule"].startswith("bluf")] == ["bluf-long"], findings
+    # indented code is code, a list continuation is prose
+    findings, _ = lint("Text.\n\n    a; b etc.\n    c; d\n\nMore; text.\n")
+    assert [f["line"] for f in findings if f["rule"] == "semicolon"] == [6], findings
+    findings, _ = lint("- Item one.\n\n    Continued; here.\n")
+    assert [f["line"] for f in findings if f["rule"] == "semicolon"] == [3], findings
+    fixed, _ = fix("Text.\n\n    a; b\n")
+    assert fixed == "Text.\n\n    a; b\n", fixed
+    # glossary
+    glossary = {"terms": {"config file": ["configuration file", "settings"]}}
+    findings, _ = lint("Edit the configuration file and the Settings.", glossary=glossary)
+    hits = [f for f in findings if f["rule"] == "glossary"]
+    assert [f["match"] for f in hits] == ["configuration file", "Settings"], hits
+    assert 'Write "config file"' in hits[0]["message"], hits
+    assert not _glossary_patterns(None)
+    # ghost-flag: flags against Usage and Options
+    usage_flags = ("# t - tool\n\n## Usage\n\n    t run [--fast] [--config FILE]\n\n## Options\n\n"
+                   "`--fast`\n: Run fast.\n\n`--verbose`\n: Say more.\n\n## Notes\n\n")
+    findings, _ = lint(usage_flags + "Use `t run --fast --verbose`, `--config`, and `t run --slow`. Also `--dry-run`.\n")
+    ghosts = [f["match"] for f in findings if f["rule"] == "ghost-flag"]
+    assert ghosts == ["--slow", "--dry-run"], ghosts
+    findings, _ = lint("# t\n\n## Usage\n\n    t run\n\n## Notes\n\nUse `t run --x` and `--y`.\n")
+    assert not any(f["rule"] == "ghost-flag" for f in findings), findings
+    # ghost-command: prose and shell fences against the Usage section
+    usage = ("# vud - tracker\n\n## Usage\n\n    vud serve [--config FILE]\n"
+             "    vud policy show|approve [--config FILE]\n"
+             "    vud team add NAME [--names A,B]\n      [--runtime docker|podman]\n\n")
+    findings, _ = lint(usage + "## Description\n\nRun `vud serve --config x`, `vud policy approve`, "
+                       "`vud team add linux --names A`, and `vud team`.\n")
+    assert not any(f["rule"] == "ghost-command" for f in findings), findings
+    findings, _ = lint(usage + "## Description\n\nRun `vud team rename a b` or `vud stop`.\n"
+                       "See `vud-postgres` and `other tool`.\n\n```sh\n$ vud serve && vud bogus\n```\n")
+    ghosts = [f["match"] for f in findings if f["rule"] == "ghost-command"]
+    assert ghosts == ["vud team rename a b", "vud stop", "vud bogus"], ghosts
+    findings, _ = lint("# tool\n\nRun `tool whatever`.\n")
+    assert not any(f["rule"] == "ghost-command" for f in findings), findings
+    findings, _ = lint("# t\n\n## Synopsis\n\n```\nt run\n```\n\n## Notes\n\nUse `t walk`.\n")
+    assert [f["match"] for f in findings if f["rule"] == "ghost-command"] == ["t walk"], findings
+    # --fix: mechanical rewrites only, code untouched
+    fixed, n = fix("The panel is removed; spin up the job. A robust tool.\n"
+                   "Keep `a; b` and &amp; as is.\n```\nx; y\n```\n")
+    assert fixed == ("The panel is removed. Start the job. A tool.\n"
+                     "Keep `a; b` and &amp; as is.\n```\nx; y\n```\n"), fixed
+    assert n == 3, n
+    fixed, n = fix("We reach out and it runs seamlessly.")
+    assert fixed == "We contact and it runs." and n == 2, (fixed, n)
+    fixed, n = fix("The request may have failed; it could be a timeout.")
+    assert fixed == "The request may have failed. It could be a timeout.", fixed
+    # new hard rules
+    findings, _ = lint("Use e.g. a file(s). Don't do it; it's — simply crucial, etc.")
+    rules = {f["rule"] for f in findings}
+    for expected in ("latin-abbreviation", "parenthetical-plural", "contraction",
+                     "em-dash", "filler-word"):
+        assert expected in rules, (expected, rules)
+    assert sum(1 for f in findings if f["rule"] == "contraction") == 2, findings
+    assert sum(1 for f in findings if f["rule"] == "latin-abbreviation") == 2, findings
+    # a product name is not a contraction, and a parenthetical is one word
+    findings, _ = lint("The certificate comes from Let's Encrypt.")
+    assert not any(f["rule"] == "contraction" for f in findings), findings
+    findings, _ = lint("The tool keeps " + "word " * 20 + "(and " + "more " * 10 + "here).")
+    assert not any(f["rule"] == "long-sentence" for f in findings), findings
+    findings, _ = lint("The keys are " + ", ".join("`k%d`" % i for i in range(30)) + " and the rest.")
+    assert not any(f["rule"] == "long-sentence" for f in findings), findings
+    # a possessive is not a contraction
+    findings, _ = lint("The user's file and the host's name.")
+    assert not any(f["rule"] == "contraction" for f in findings), findings
+    # numeral at sentence start, not in a list marker or a table cell
+    findings, _ = lint("0 on success. The tool exits with 1.\n1. Step one.\n| 0 | ok |\n|---|---|\n| 1 | fine |\n")
+    numerals = [f for f in findings if f["rule"] == "numeral-start"]
+    assert len(numerals) == 1 and numerals[0]["line"] == 1, numerals
+    # a wrapped line that starts mid-sentence is not a sentence start
+    findings, _ = lint('Hyphenate a count that modifies a noun: "a\n10-step procedure". Keep it.\n')
+    assert not any(f["rule"] == "numeral-start" for f in findings), findings
+    findings, _ = lint("Count twice.\n10 steps follow.\n")
+    assert any(f["rule"] == "numeral-start" for f in findings), findings
+    # advisory sentence rules
+    findings, _ = lint("Run the job if the file exists. This ensures the cache is running.\n## Exit Status Codes\nUse **bold**.")
+    rules = {f["rule"] for f in findings}
+    for expected in ("condition-last", "ambiguous-this", "progressive-tense", "heading-case", "bold"):
+        assert expected in rules, (expected, rules)
+    assert all(f["level"] == "advisory" for f in findings
+               if f["rule"] in ("condition-last", "ambiguous-this", "progressive-tense", "heading-case", "bold")), findings
+    findings, _ = lint("If the file exists, run the job. This process is slow.\n## Teams and perspectives\n")
+    assert not any(f["rule"] in ("condition-last", "ambiguous-this", "heading-case") for f in findings), findings
+    # directives
+    findings, _ = lint("<!-- ste-lint: disable-next-line semicolon -->\na; b\nc; d <!-- ste-lint: disable-line semicolon -->\ne; f\n")
+    assert [f["line"] for f in findings if f["rule"] == "semicolon"] == [4], findings
+    findings, _ = lint("<!-- ste-lint: disable semicolon,em-dash -->\na; b — c\n<!-- ste-lint: enable semicolon -->\nd; e — f\n")
+    assert [(f["line"], f["rule"]) for f in findings if f["rule"] in ("semicolon", "em-dash")] == [(4, "semicolon")], findings
+    findings, _ = lint("<!-- ste-lint: disable-file -->\na; b\n")
+    assert findings == [], findings
+    # --fix: phrases, fillers, contractions
+    fixed, n = fix("In order to run it, don't wait; it can't fail, e.g. furthermore it simply works.")
+    assert fixed == "To run it, do not wait. It cannot fail, for example also it works.", fixed
+    assert n == 7, n
     # a fenced BLUF heading is not a heading
     findings, _ = lint("# t\n\n```\n## BLUF\n```\n", filename="README.md")
     assert [f["rule"] for f in findings] == ["bluf-missing"], findings
@@ -547,7 +1153,9 @@ def main(argv):
         selftest()
         return 0
     as_json = "--json" in argv
-    baseline = 0
+    apply_fix = "--fix" in argv
+    use_glossary = "--no-glossary" not in argv
+    baseline = None
     disabled = set()
     paths = []
     i = 0
@@ -564,14 +1172,38 @@ def main(argv):
         i += 1
 
     findings, words_total = [], 0
+    glossary_baseline = 0
     if paths:
         for p in paths:
-            f, w = lint(open(p, encoding="utf-8").read(), filename=p)
+            glossary = load_glossary(p)[0] if use_glossary else None
+            if glossary:
+                disabled |= set(glossary.get("disable", []))
+                glossary_baseline = max(glossary_baseline, int(glossary.get("baseline", 0)))
+            text = open(p, encoding="utf-8").read()
+            if apply_fix:
+                fixed, n = fix(text)
+                if n:
+                    with open(p, "w", encoding="utf-8") as handle:
+                        handle.write(fixed)
+                    print(f"{p}: {n} fixes applied. Read the diff.", file=sys.stderr)
+                text = fixed
+            f, w = lint(text, filename=p, glossary=glossary)
             findings.extend(f)
             words_total += w
     else:
-        findings, words_total = lint(sys.stdin.read())
+        text = sys.stdin.read()
+        if apply_fix:
+            text, _ = fix(text)
+            sys.stdout.write(text)
+            return 0
+        glossary = load_glossary(os.getcwd())[0] if use_glossary else None
+        if glossary:
+            disabled |= set(glossary.get("disable", []))
+            glossary_baseline = int(glossary.get("baseline", 0))
+        findings, words_total = lint(text, glossary=glossary)
 
+    if baseline is None:
+        baseline = glossary_baseline
     findings = [f for f in findings if f["rule"] not in disabled]
     hard_count = sum(1 for f in findings if f["level"] == "advisory-free")
     report(findings, words_total, as_json, hard_count, baseline)

@@ -21,4 +21,4 @@ jobs:
         run: bash scripts/test.sh
 
       - name: Lint the documentation
-        run: python3 skills/scuq-scraibe/reference/ste-lint.py README.md CLAUDE.md CHANGELOG.md docs/*.md
+        run: python3 skills/scuq-scraibe/reference/ste-lint.py --selftest && python3 skills/scuq-scraibe/reference/ste-lint.py README.md CLAUDE.md CHANGELOG.md docs/*.md skills/*/SKILL.md skills/*/reference/*.md agents/*.md

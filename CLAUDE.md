@@ -7,6 +7,7 @@ You develop, test, and document them here.
 ## Layout
 
 - `skills/<name>/`: One skill per directory, with a `SKILL.md` file.
+- `skills/<name>/evals/`: The evaluation tasks of a skill, with `evals.json`, the fixtures, and `run.sh`.
 - `agents/<name>.md`: One agent per file.
 - `cmd/ai-skillsctl/`: The installer command.
 - `internal/`: The Go packages of the installer.
@@ -60,7 +61,7 @@ Claude Code loads the installed copies from `~/.claude/`, not the copies in this
 
 - To write documentation in this repository, use the installed scuq-scraibe skill and agent.
 - To change the scraibe standard, edit `skills/scuq-scraibe/SKILL.md`.
-- The standard has its own name and version, for example `scraibe v0.3`.
+- The standard has its own name and version, for example `scraibe v0.4`.
   The prefix does not apply to the name of the standard.
 - If you change the rules of the standard, tell the user.
   The user decides the new standard version.
@@ -106,4 +107,5 @@ Do these steps only when the user tells you to make a release.
 - Load the `scuq-scraibe` skill before you write documentation or comments.
 - Apply the scraibe standard to all Markdown files, `SKILL.md` files, agent files, and code comments.
 - Run `ste-lint.py` from the installed scuq-scraibe skill on each Markdown file you change.
-- In your report, give the `Doc-Draft: scraibe/0.3` trailer for the user to add to the commit.
+- After a change to the rules of the standard, tell the user to run `skills/scuq-scraibe/evals/run.sh`. It calls `claude -p` and costs tokens, so do not run it yourself.
+- In your report, give the `Doc-Draft: scraibe/0.4` trailer for the user to add to the commit.
