@@ -37,8 +37,17 @@ alert_levels:
     persistence: auto-clear
     ack: optional
     audio: none
+  normal:
+    meaning: Within the expected range.
+    response: none required
+    color: { token: sem-normal, light: "#5F6368", dark: "#9AA0A6" }
+    icon: none
+    position: inline
+    persistence: not-applicable
+    ack: none
+    audio: none
   unknown:
-    meaning: State cannot be determined (no data or stale data).
+    meaning: State cannot be determined (no data, or the poll failed).
     response: Check data source.
     color: { token: sem-unknown, light: "#5F5F5F", dark: "#BDBDBD" }
     pattern: hatched
@@ -47,15 +56,55 @@ alert_levels:
     persistence: until-data-returns
     ack: none
     audio: none
+  stale:
+    meaning: The last value is older than the staleness threshold.
+    response: Check data source. Do not trust the value.
+    color: { token: sem-stale, light: "#5F5F5F", dark: "#BDBDBD" }
+    pattern: dashed
+    icon: clock-alert
+    position: inline
+    persistence: until-data-returns
+    ack: none
+    audio: none
+
+severities:
+  # A severity classifies a record. An alert asks a person to act.
+  # Set alert_level only if each record of the severity has the response of that level.
+  critical: { rank: 1, label: "Critical", short_label: "CRIT", alert_level: null }
+  high:     { rank: 2, label: "High",     short_label: "HIGH", alert_level: null }
+  medium:   { rank: 3, label: "Medium",   short_label: "MED",  alert_level: null }
+  low:      { rank: 4, label: "Low",      short_label: "LOW",  alert_level: null }
 
 states:
-  # entity_type: { state: { meaning, alert_level, label } }
+  # entity_type: { state: { meaning, alert_level, label, short_label } }
+  # short_label is optional. Use it only in a compact layout.
   switch_port:
     up:         { meaning: Link up and forwarding., alert_level: normal,  label: "Up" }
-    admin_down: { meaning: Disabled by operator.,   alert_level: advisory, label: "Admin down" }
+    admin_down: { meaning: Disabled by operator.,   alert_level: advisory, label: "Admin down", short_label: "Adm down" }
     down:       { meaning: Enabled but no link.,    alert_level: caution, label: "Down" }
-    err_disabled: { meaning: Disabled by device protection., alert_level: warning, label: "Err-disabled" }
+    err_disabled: { meaning: Disabled by device protection., alert_level: warning, label: "Err-disabled", short_label: "Err-dis" }
     unknown:    { meaning: Not polled or poll failed., alert_level: unknown, label: "Unknown" }
+    stale:      { meaning: Last poll older than the threshold., alert_level: stale, label: "Stale" }
+
+entity_fields:
+  # Lower priority numbers show first in each layout.
+  # A user cannot hide a field with required: true.
+  switch_port:
+    state:       { priority: 1, required: true }
+    name:        { priority: 2, required: true }
+    data_age:    { priority: 3, required: true }
+    vlan:        { priority: 4, required: false }
+    description: { priority: 5, required: false }
+
+layouts:
+  # Select a layout from the CSS width and the pointer type, not from the physical resolution.
+  narrow: { max_css_px: 767, records: cards, navigation: bottom, detail: full-screen }
+  medium: { min_css_px: 768, max_css_px: 1919, records: table, navigation: sidebar, detail: drawer }
+  wide:   { min_css_px: 1920, records: table, navigation: sidebar, detail: side-by-side }
+  pointer:
+    # WCAG 2.2 SC 2.5.8 gives the fine minimum. The coarse value is a project choice.
+    fine:   { min_target_css_px: 24 }
+    coarse: { min_target_css_px: 44 }
 
 staleness:
   # data source: max age before state becomes STALE
@@ -67,12 +116,14 @@ icons:
   octagon-alert: warning level
   triangle-alert: caution level
   circle-info-outline: advisory level
-  circle-question: unknown / stale
+  circle-question: unknown
+  clock-alert: stale
 
 labels:
   # canonical term: forbidden synonyms
   "Down": ["offline", "dead", "unreachable"]
   "Unknown": ["n/a", "-", "?"]
+  "Stale": ["old", "outdated", "expired"]
 
 deviations: []
   # - rule: 3a

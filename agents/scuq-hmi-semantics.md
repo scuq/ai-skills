@@ -30,6 +30,7 @@ Before you write code, get these facts from the task or from the code:
 - The data source of each state, and the poll interval.
 - The actions that the operator can start, and the effect of each action.
 - The alert levels, if the interface has alerts.
+- The selection scope and the view filters, if the interface has bulk actions or filtered tables.
 - The path of the semantic registry, if one exists.
 
 If a fact is missing and the code does not show it, ask the caller.
@@ -46,6 +47,7 @@ Write each assumption in your report.
    The skill directory is `~/.claude/skills/scuq-hmi-semantics/`.
 3. Read `references/alert-contract.md` if the interface has alerts or severity levels.
 4. Write the code.
+   Read `assets/micro-parts.html` first, and copy the parts that the interface needs.
    Each component reads a state name from the registry.
    No component holds a color, an icon, or a label of its own.
 5. Review the result with `references/review-checklist.md`.
@@ -69,6 +71,10 @@ Write each assumption in your report.
 - Never show a commanded state as the actual state.
 - Never delete a deviation from the registry without the approval of the caller.
 - Do not add an alert level that has no operator response.
+- Never let a filter, a saved view, a drawer, or a dialog hide an active alert.
+- Never show a loading state or a failed request as "no results".
+- Never put a target, a count, or a scope on a button.
+  Put them in the action summary line beside the button.
 
 ## Report
 

@@ -18,6 +18,10 @@ GitHub releases distribute the skills and agents, and `ai-skillsctl update` inst
 | scuq-nagios-plugin agent | Writes, changes, and reviews plugins with the scuq-nagios-plugin skill. | done |
 | scuq-hmi-semantics skill | Gives the rules for the meaning of a state, an alert, and a control in an operator interface. | done |
 | scuq-hmi-semantics agent | Builds and reviews operator interfaces with the scuq-hmi-semantics skill. | done |
+| scuq-hmi-semantics data-workspace rules | Adds rules for severity, view truth, bulk changes, and adaptive layout. | done |
+| scuq-hmi-semantics action summary line | Keeps a button to one short verb, and shows the effect beside the button. | done |
+| scuq-hmi-semantics filter and modal rules | Gives the rules for client and server filters, and for modal dialogs. | done |
+| scuq-hmi-semantics micro-parts | Gives small HTML and CSS parts that hold the semantics, with registry tokens only. | done |
 | `ai-skillsctl` | Installs and updates the skills and agents of a release in `~/.claude`. | done |
 | Release workflow | Publishes the `ai-skillsctl` binaries and the skill bundle for a version tag. | done |
 | CI workflow | Tests the Go modules and lints the documentation on each branch push. | done |

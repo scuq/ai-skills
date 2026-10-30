@@ -16,4 +16,4 @@ Direct the user to the current revision of the source document instead.
 | ANSI/ISA-18.2, IEC 62682 | Industrial control | The alarm lifecycle, rationalization, shelving, ack compared with clear |
 | EEMUA 191 | Industrial control | Alarm system performance metrics |
 | IEC 60073 | Electrical equipment | Color coding of indicators and actuators |
-| WCAG 2.2 | Web | Contrast and non-color-only information (SC 1.4.1, 1.4.3, 1.4.11) |
+| WCAG 2.2 | Web | Contrast and non-color-only information (SC 1.4.1, 1.4.3, 1.4.11). Reflow (SC 1.4.10). Content on hover or focus (SC 1.4.13). Character key shortcuts (SC 2.1.4). Focus not obscured (SC 2.4.11). Dragging movements (SC 2.5.7). Target size (SC 2.5.8) |

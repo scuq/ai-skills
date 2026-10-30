@@ -1,0 +1,144 @@
+<!--
+Semantic micro-parts. Copy a part, and adapt it to the project.
+These parts hold meaning, not a look. They do not set a font, a spacing scale, or a button style.
+Generate the sem tokens from the registry. Never write a raw color here.
+Replace each icon with the icon that the registry names.
+-->
+<style>
+  /* Rule 3a: a state has an icon, a text label, and a color. */
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+    color: var(--status-color);
+    white-space: nowrap;
+  }
+  [data-status="warning"]  { --status-color: var(--sem-warning); }
+  [data-status="caution"]  { --status-color: var(--sem-caution); }
+  [data-status="advisory"] { --status-color: var(--sem-advisory); }
+  [data-status="normal"]   { --status-color: var(--sem-normal); }
+  [data-status="unknown"]  { --status-color: var(--sem-unknown); }
+  [data-status="stale"]    { --status-color: var(--sem-stale); }
+
+  /* Rule 3b: unknown is hatched. The stripe sits beside the text, so the text stays clear. */
+  .status[data-status="unknown"]::before {
+    content: "";
+    align-self: stretch;
+    width: 0.5em;
+    background: repeating-linear-gradient(45deg, currentColor 0 1px, transparent 1px 3px);
+  }
+
+  /* Rule 3b: stale is dashed and keeps the last value next to its age. */
+  .status[data-status="stale"] {
+    border: 1px dashed currentColor;
+    padding-inline: 0.25em;
+  }
+
+  /* Rule 3c: the commanded state and the actual state stay in separate rows. */
+  .command-state {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0 1ch;
+  }
+  .command-state dd { margin: 0; }
+
+  /* Rules 3e and 3m: the alert area stays above each drawer and each dialog. */
+  .alert-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  /* Rule 3f: the summary line takes the free width, and the buttons stay short. */
+  .action-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+  }
+  .action-line > p {
+    flex: 1 1 20ch;
+    margin: 0;
+  }
+
+  /* Rule 3k: the filter truth bar stays with the table. */
+  .filter-truth {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em 1em;
+  }
+
+  /* Rule 3n: the backdrop sits under the alert bar. Do not use showModal(), because its top layer covers the alert bar. */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+  }
+</style>
+
+<!-- Rules 3a and 3d: a state from the registry. A compact layout uses short_label. -->
+<span class="status" data-status="warning"><svg class="icon" aria-hidden="true"></svg>Err-disabled</span>
+
+<!-- Rule 3j: a severity without an alert keeps its text and uses the neutral color. -->
+<span class="status" data-status="normal"><abbr title="Critical">CRIT</abbr></span>
+
+<!-- Rule 3b: a data age. A relative age needs no time zone. Show a clock time with its time zone. -->
+<time class="status" data-status="normal" datetime="2026-10-30T09:12:00Z">updated 4 min ago</time>
+
+<!-- Rule 3b: unknown, with no value. -->
+<span class="status" data-status="unknown"><svg class="icon" aria-hidden="true"></svg>Unknown</span>
+
+<!-- Rule 3b: stale, with the last value and its age. -->
+<span class="status" data-status="stale"><svg class="icon" aria-hidden="true"></svg>Stale: up, 14 min ago</span>
+
+<!-- Rule 3c: commanded and actual. Remove this block when the two states match. -->
+<dl class="command-state">
+  <dt>COMMAND</dt><dd>shutdown port Gi1/0/12</dd>
+  <dt>ACTUAL</dt><dd>up (last polled 00:00:08 ago)</dd>
+  <dt>STATUS</dt><dd><span class="status" data-status="advisory">PENDING: mismatch</span></dd>
+</dl>
+
+<!-- Rule 3e: one alert area, with a link to the affected object. -->
+<section class="alert-bar" aria-label="Active alerts">
+  <a class="status" data-status="warning" href="#port-gi1-0-12">
+    <svg class="icon" aria-hidden="true"></svg>Err-disabled: port Gi1/0/12 on sw01
+  </a>
+</section>
+
+<!-- Rule 3f: a short verb on the button, and the effect in the line beside it. -->
+<div class="action-line">
+  <p id="action-summary" aria-live="polite">24 assets: 18 prod, 6 dev. Install at 2026-11-05 02:00 CET.</p>
+  <button type="button">Cancel</button>
+  <button type="submit" aria-describedby="action-summary">Patch</button>
+</div>
+
+<!-- Rule 3k: active filters, the matched count, and the alerts outside the view. -->
+<div class="filter-truth">
+  <ul aria-label="Active filters">
+    <li>Severity: Critical, High</li>
+    <li>Status: Open</li>
+  </ul>
+  <output>170 of 1,842 findings</output>
+  <span>Server result at 14:06:10 CET</span>
+  <a class="status" data-status="warning" href="#alerts">
+    <svg class="icon" aria-hidden="true"></svg>3 alerts outside this view
+  </a>
+</div>
+
+<!-- Rule 3k: a request runs, or a request failed. Neither state shows "no results". -->
+<span class="status" data-status="advisory" role="status">Loading: rows show the previous filter</span>
+<span class="status" data-status="caution" role="status">Filter failed: rows show the previous filter</span>
+<button type="button">Retry</button>
+
+<!-- Rule 3n: the first focus is on Cancel. Make the content behind the dialog inert. -->
+<div class="backdrop">
+  <div role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+    <h2 id="dialog-title">New scan</h2>
+    <div class="action-line">
+      <p id="dialog-summary">Scan 30 assets in DMZ, prod.</p>
+      <button type="button" autofocus>Cancel</button>
+      <button type="submit" aria-describedby="dialog-summary">Scan</button>
+    </div>
+  </div>
+</div>

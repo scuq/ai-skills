@@ -6,6 +6,24 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- scuq-hmi-semantics: Rule 3j separates a severity from an alert. Only a severity that the registry maps to an alert level uses an alert color.
+- scuq-hmi-semantics: Rule 3k adds view truth. A filter, a saved view, or a hidden column cannot hide the alert area, and the interface shows the action-required records outside the view.
+- scuq-hmi-semantics: Rule 3k tells a client filter from a server filter, and gives the loading state and the failure state of a filter.
+- scuq-hmi-semantics: Rule 3n gives the behavior of a modal dialog: focus, the Tab key, closure, and the alert area above the backdrop.
+- scuq-hmi-semantics: Rule 3l gives one bulk flow for every module, from the selection to the result for each record.
+- scuq-hmi-semantics: Rule 3m adds adaptive layout. The layout follows the CSS width, the zoom, and the pointer type, and density never changes the state coding.
+- scuq-hmi-semantics: `assets/micro-parts.html` gives small HTML and CSS parts that hold the semantics, with registry tokens only.
+- scuq-hmi-semantics: The registry template has `severities`, `short_label`, `entity_fields`, `layouts`, and the levels `normal` and `stale`.
+- scuq-hmi-semantics: The review checklist has a View truth group and the items S6, L5 to L8, K7 to K13, and A6.
+
+### Changed
+
+- scuq-hmi-semantics: Rule 3f gives a button one short verb. The target, the count, and the environment now go in an always-visible action summary line beside the button.
+- scuq-hmi-semantics: Rule 3b asks for the coverage next to a count or a trend. Rule 3e limits what a tooltip or a progressive disclosure can hide. Rule 3g applies to keyboard shortcuts and the command palette.
+- scuq-hmi-semantics: The alert contract defines UNKNOWN and STALE as two levels.
+
 ## [0.5.0] - 2026-10-25
 
 ### Added

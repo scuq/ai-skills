@@ -12,7 +12,8 @@ Do not add a level without defining every field.
 | CAUTION | Action necessary soon. Degradation or risk is growing | Act within the defined time | Amber or yellow. A distinct shape. The one alert area. A text label | Stays while the condition exists | Required | Optional. Different from WARNING |
 | ADVISORY | For awareness. No immediate action necessary | Note it, plan for it | Neutral or cyan. An outline icon. A text label | Can clear on its own when the condition clears | Optional | None |
 | NORMAL | Within the expected range | None | Low salience, for example gray or muted. Never a wall of bright green | Not applicable | Not applicable | None |
-| UNKNOWN, STALE | The state cannot be determined | Investigate the data source | A distinct pattern, for example a hatched or dashed outline, with a question mark icon. A text label | Stays until data returns | Not applicable | None |
+| UNKNOWN | The state cannot be determined. No data exists, or the poll failed | Investigate the data source | A hatched pattern, with a question mark icon. A text label | Stays until data returns | Not applicable | None |
+| STALE | The last value is older than the staleness threshold | Investigate the data source. Do not trust the value | A dashed outline, with a clock icon. A text label, the last value, and its age | Stays until new data returns | Not applicable | None |
 
 Notes:
 
@@ -38,6 +39,26 @@ These rules follow the spirit of ISA-18.2 and EEMUA 191.
 - Use hysteresis or a deadband to prevent flapping. For example, raise the alarm at 90 percent, and clear it at 85 percent.
 - Measure the alerts per operator per hour, the standing alerts, and the chattering alerts. A persistent standing alert is a defect, either in the system or in the alert definition.
 - Make shelving, which is a temporary suppression, explicit, time-limited, and attributed to a person. Show a shelved alert as "shelved".
+
+## Severity and alerts
+
+A severity is a property of a record, for example a finding with a CVSS score of 9.8.
+An alert is a request for a person to act.
+A table with 1,842 findings has 1,842 severities, but it does not have 1,842 alerts.
+
+- Define severities in `severities:` of the registry, not in `alert_levels:`.
+- Map a severity to an alert level only if each record of that severity has the operator response.
+- Raise an alert from a condition that needs a response, for example a known exploit on an exposed asset.
+- Give a workflow status, for example "Open", a neutral color. A workflow status is not an alarm.
+
+## Alerts and views
+
+A filter or a saved view changes the records in a table.
+It does not change the active alerts.
+
+- Keep the alert area outside the filtered content.
+- Show the count of action-required records that the current view hides, with a link to them.
+- If a drawer or a dialog is open, keep the alert area visible.
 
 ## Toasts and notifications
 
