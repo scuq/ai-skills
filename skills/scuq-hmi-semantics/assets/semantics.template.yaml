@@ -70,10 +70,20 @@ alert_levels:
 severities:
   # A severity classifies a record. An alert asks a person to act.
   # Set alert_level only if each record of the severity has the response of that level.
-  critical: { rank: 1, label: "Critical", short_label: "CRIT", alert_level: null }
-  high:     { rank: 2, label: "High",     short_label: "HIGH", alert_level: null }
-  medium:   { rank: 3, label: "Medium",   short_label: "MED",  alert_level: null }
-  low:      { rank: 4, label: "Low",      short_label: "LOW",  alert_level: null }
+  # color is the muted severity color for a severity without an alert level (rule 3j).
+  # It has less saturation than the alert colors. A mapped severity uses the alert color instead.
+  critical:
+    { rank: 1, label: "Critical", short_label: "CRIT", alert_level: null,
+      color: { token: sem-sev-critical, light: "#9E5A55", dark: "#D9A6A2" } }
+  high:
+    { rank: 2, label: "High", short_label: "HIGH", alert_level: null,
+      color: { token: sem-sev-high, light: "#8F6236", dark: "#D6B48C" } }
+  medium:
+    { rank: 3, label: "Medium", short_label: "MED", alert_level: null,
+      color: { token: sem-sev-medium, light: "#776D3A", dark: "#D0C78E" } }
+  low:
+    { rank: 4, label: "Low", short_label: "LOW", alert_level: null,
+      color: { token: sem-sev-low, light: "#656A70", dark: "#A3A8AE" } }
 
 states:
   # entity_type: { state: { meaning, alert_level, label, short_label } }

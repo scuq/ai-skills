@@ -20,6 +20,12 @@ Replace each icon with the icon that the registry names.
   [data-status="unknown"]  { --status-color: var(--sem-unknown); }
   [data-status="stale"]    { --status-color: var(--sem-stale); }
 
+  /* Rule 3j: a severity without an alert level uses its muted severity color, never an alert color. */
+  [data-severity="critical"] { --status-color: var(--sem-sev-critical); }
+  [data-severity="high"]     { --status-color: var(--sem-sev-high); }
+  [data-severity="medium"]   { --status-color: var(--sem-sev-medium); }
+  [data-severity="low"]      { --status-color: var(--sem-sev-low); }
+
   /* Rule 3b: unknown is hatched. The stripe sits beside the text, so the text stays clear. */
   .status[data-status="unknown"]::before {
     content: "";
@@ -80,8 +86,8 @@ Replace each icon with the icon that the registry names.
 <!-- Rules 3a and 3d: a state from the registry. A compact layout uses short_label. -->
 <span class="status" data-status="warning"><svg class="icon" aria-hidden="true"></svg>Err-disabled</span>
 
-<!-- Rule 3j: a severity without an alert keeps its text and uses the neutral color. -->
-<span class="status" data-status="normal"><abbr title="Critical">CRIT</abbr></span>
+<!-- Rule 3j: a severity without an alert keeps its text and uses its muted severity color. -->
+<span class="status" data-severity="critical"><abbr title="Critical">CRIT</abbr></span>
 
 <!-- Rule 3b: a data age. A relative age needs no time zone. Show a clock time with its time zone. -->
 <time class="status" data-status="normal" datetime="2026-10-30T09:12:00Z">updated 4 min ago</time>

@@ -69,4 +69,4 @@ An item marked (C1) is mandatory only for class C1.
 - [ ] A3 Consequential alarms are grouped under their root cause.
 - [ ] A4 Hysteresis or a deadband prevents flapping.
 - [ ] A5 A toast never carries a system alert alone.
-- [ ] A6 A severity uses an alert color only if the registry maps it to an alert level. Each record of that severity has the operator response.
+- [ ] A6 A severity uses an alert color only if the registry maps it to an alert level. Each record of that severity has the operator response. A severity without an alert level uses the muted severity color from the registry.

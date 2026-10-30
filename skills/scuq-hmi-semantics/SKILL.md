@@ -115,7 +115,7 @@ If a developer needs a new icon or a new state, add it to the registry first.
   - Show the time zone on a timestamp.
   - Show the threshold next to a value when something judges the value against it.
 - 3i. Alarm discipline. Every alert must have an operator response. If nobody needs to act on it, it is an event or a log line, not an alert. Avoid alarm floods: group consequential alarms, suppress them under their root cause, and show the root first. See `references/alert-contract.md`.
-- 3j. Severity is not an alert. A severity classifies a record, for example a finding with a CVSS score. An alert asks a person to act. Map a severity to an alert level in the registry only if each record of that severity has the operator response. Then the severity uses the alert color. Otherwise, show the severity with text and a neutral color. A record with an active alert shows the level of that alert in its row.
+- 3j. Severity is not an alert. A severity classifies a record, for example a finding with a CVSS score. An alert asks a person to act. Map a severity to an alert level in the registry only if each record of that severity has the operator response. Then the severity uses the alert color. Otherwise, show the severity with text and a muted severity color from the registry. The muted colors are a red, an orange, and a yellow with less saturation than the alert colors. A severity color is never an alert color, and it never appears in the alert area. A record with an active alert shows the level of that alert in its row.
 - 3k. View truth. A filter, a search, a page, a saved view, or a hidden column never hides the alert area.
 
   - Show the active filters.

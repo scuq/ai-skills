@@ -6,6 +6,12 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-10-30
+
+### Changed
+
+- scuq-hmi-semantics: Rule 3j gives a severity without an alert level a muted severity color instead of a neutral color. The muted colors are a red, an orange, and a yellow with less saturation than the alert colors. The registry template has the tokens `sem-sev-critical` to `sem-sev-low`, and `assets/micro-parts.html` has a `data-severity` part.
+
 ## [0.8.0] - 2026-10-30
 
 ### Added

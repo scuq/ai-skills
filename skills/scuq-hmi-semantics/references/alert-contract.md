@@ -48,6 +48,7 @@ A table with 1,842 findings has 1,842 severities, but it does not have 1,842 ale
 
 - Define severities in `severities:` of the registry, not in `alert_levels:`.
 - Map a severity to an alert level only if each record of that severity has the operator response.
+- Give a severity without an alert level a muted severity color from `severities:`. Examples are a muted red for critical, a muted orange for high, and a muted yellow for medium. The muted color has less saturation than the alert colors, so an alert stands out from a table of severities.
 - Raise an alert from a condition that needs a response, for example a known exploit on an exposed asset.
 - Give a workflow status, for example "Open", a neutral color. A workflow status is not an alarm.
 
