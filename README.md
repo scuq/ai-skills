@@ -4,7 +4,7 @@
 
 This repository holds skills and agents for Claude Code.
 `ai-skillsctl` installs them from a GitHub release into the Claude configuration directory.
-Three skills and three agents are in the release: scuq-scraibe, scuq-nagios-plugin, and scuq-hmi-semantics.
+Four skills and four agents are in the release: scuq-scraibe, scuq-nagios-plugin, scuq-hmi-semantics, and scuq-go-spa-stack.
 The installer, the CI workflow, and the release workflow work.
 Install `ai-skillsctl`, and run `ai-skillsctl update`.
 
@@ -42,9 +42,11 @@ The repository holds these items:
 | `skills/scuq-scraibe/` | The scraibe standard for documentation and code comments |
 | `skills/scuq-nagios-plugin/` | The rules and a Go template for plugins for Nagios Core, Naemon, and Icinga 2 |
 | `skills/scuq-hmi-semantics/` | The rules for the meaning of a state, an alert, and a control in an operator interface |
+| `skills/scuq-go-spa-stack/` | The technology stack and the rules for a single-page application with a Go server and WebSocket push |
 | `agents/scuq-scraibe.md` | An agent that writes documentation in the scraibe standard |
 | `agents/scuq-nagios-plugin.md` | An agent that writes and reviews monitoring plugins |
 | `agents/scuq-hmi-semantics.md` | An agent that builds and reviews operator interfaces |
+| `agents/scuq-go-spa-stack.md` | An agent that writes and reviews single-page applications with a Go server |
 
 Each skill and agent has the name prefix `scuq-`.
 The prefix prevents a conflict with a skill or an agent of your own that has the same name.

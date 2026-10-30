@@ -3,7 +3,7 @@
 ## BLUF
 
 Phase 1 sets up the repository for skill and agent development and distribution.
-All features of the phase are done.
+All features of the phase are done, except the workstation mockup of scuq-go-spa-stack.
 GitHub releases distribute the skills and agents, and `ai-skillsctl update` installs them.
 
 ## Features
@@ -22,6 +22,9 @@ GitHub releases distribute the skills and agents, and `ai-skillsctl update` inst
 | scuq-hmi-semantics action summary line | Keeps a button to one short verb, and shows the effect beside the button. | done |
 | scuq-hmi-semantics filter and modal rules | Gives the rules for client and server filters, and for modal dialogs. | done |
 | scuq-hmi-semantics micro-parts | Gives small HTML and CSS parts that hold the semantics, with registry tokens only. | done |
+| scuq-go-spa-stack skill | Gives the rules and a suggested stack for a single-page application with a Go server, WebSocket push, and no database, PostgreSQL 18, or MongoDB 8. | done |
+| scuq-go-spa-stack agent | Plans, writes, extends, and reviews such applications with the scuq-go-spa-stack skill. | done |
+| scuq-go-spa-stack workstation mockup | Shows the workstation profile: a 30-column inventory grid, a dockable inspector, tabbed vulnerability details, a persistent bulk-edit panel, and a command palette. | planned |
 | `ai-skillsctl` | Installs and updates the skills and agents of a release in `~/.claude`. | done |
 | Release workflow | Publishes the `ai-skillsctl` binaries and the skill bundle for a version tag. | done |
 | CI workflow | Tests the Go modules and lints the documentation on each branch push. | done |
