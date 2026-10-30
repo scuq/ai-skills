@@ -126,6 +126,7 @@ If a developer needs a new icon or a new state, add it to the registry first.
   - If a client filter holds only a part of the records, do not show its count as the result. Send the filter to the server.
   - While a request runs, show a loading state, and tell the operator that the rows show the previous filter.
   - If a request fails, show the failure and a retry control. Never show a failure or a loading state as "no results".
+<!-- ste-lint: disable-next-line synonym-rotation -->
 - 3l. Bulk changes. Use the same flow in every module: select, configure, preview, apply, verify.
 
   - Select: show the selection scope, with the records outside the current page and the count for each environment.
