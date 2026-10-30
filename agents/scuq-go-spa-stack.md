@@ -64,6 +64,7 @@ Write each assumption in your report.
 11. Build the binary with `CGO_ENABLED=0`, and make sure that `go version -m` shows it.
 12. Start the binary, and request `/healthz`, `/readyz`, `/`, and `/api/items` without a session.
     Make sure that the API answers 401 and `/` answers 200 with the security headers.
+    Then run the login checks of `reference/auth-security.md` against it.
 13. Write `README.md` as section 14 of the skill says.
 14. Run `ste-lint.py` from the scuq-scraibe skill on `README.md`.
 

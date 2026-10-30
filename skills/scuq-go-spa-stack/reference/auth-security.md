@@ -141,7 +141,7 @@ The login handler:
 2. Take a token from the rate limiter for the client address and for the username.
    Without a token, answer 429.
 3. Read the user by username.
-   If the user does not exist, verify the password against a fixed dummy hash, so that the time does not reveal the user.
+   If the user does not exist, check the password against a fixed dummy hash, so that the time does not reveal the user.
 4. If the password does not match, answer 401 with the same message as for an unknown user.
 5. Call `sm.RenewToken`, then `sm.Put(ctx, "user_id", u.ID)`.
 6. Answer 204.
@@ -233,6 +233,50 @@ The flow:
 - A redirect URL must be an absolute path on the own host.
   Reject every other value.
 
+## Login hardening
+
+These rules come from an active check of the login route of the showcase.
+
+- Bound the password checks in flight with a semaphore of one slot for each CPU.
+  One argon2id check holds 64 MiB, and an attacker with many addresses starts many checks at the same time.
+  Answer 503 with `Retry-After` when no slot opens in two seconds.
+- Limit the login by client address with a small burst, for example five tries and then one every 12 seconds.
+- Limit the login by username with a looser bucket, for example 20 tries and then one every three seconds.
+  A tight limit on the username lets an attacker lock a user out with a handful of requests.
+- Answer 429 with a `Retry-After` header.
+- Read the client address from `X-Forwarded-For` only when the peer is a trusted proxy from a `-trusted-proxy` CIDR list, and take the last entry.
+  Without that, every client behind the proxy shares one limit.
+- Reject a username over 64 bytes and a password over 1024 bytes with 422 before the limiter and the hash.
+- Set the `Secure` flag by default, and turn it off only on a loopback listen address.
+  Log a warning when it is off.
+- Send `Cache-Control: no-store` on `/api/`, `/auth/`, and `/ws`, and `X-Frame-Options: DENY` next to `frame-ancestors`.
+- Log a failed login with the address, never with the username or the password.
+
+## Login checks
+
+Run these against a test server after a change to the login.
+Each line gives the request and the expected result.
+
+| Check | Request | Expected |
+|---|---|---|
+| Cookie flags | Login | `Set-Cookie` with `HttpOnly`, `SameSite=Lax`, `Path=/`, and `Secure` off loopback |
+| Fixation | Login with a preset `session` cookie | A different token in the answer |
+| Logout | Logout, then `GET /api/me` with the old cookie | 401 |
+| Enumeration by message | Unknown user, and known user with a wrong password | The same body and status |
+| Enumeration by time | The same two requests, four times each | The same time within a few milliseconds, one hash each |
+| Brute force | Six wrong passwords in a row | 429 with `Retry-After` before the sixth |
+| Lockout | The right password from a second address while the first is limited | 204, not 429 |
+| CSRF | Login with `Sec-Fetch-Site: cross-site`, and with `Origin` of another host | 403 both |
+| Body | 8 KiB body, a body that is not JSON | 400 both |
+| Length | A password of 1025 bytes | 422 |
+| Headers | Any `/api/` answer | CSP with a nonce, HSTS, `nosniff`, `no-store`, `X-Frame-Options` |
+| Log | The server log after the checks | No password, no token |
+
+The showcase has the checks as the script `scripts/login-checks.py`.
+It plays two client addresses through `X-Forwarded-For`, so start the server with `-trusted-proxy 127.0.0.0/8` for it.
+- The session middleware of `scs` writes its own `Cache-Control`.
+  Set `no-store` in a `WriteHeader` wrapper, so that it goes in after every other middleware.
+
 ## Rate limit
 
 ```go
@@ -265,10 +309,11 @@ func (l *Limiter) Allow(key string) bool {
 }
 ```
 
-- Login: five tries per minute for each address, and ten per minute for each username.
+- Login: five tries at once for each address, then one every 12 seconds.
+  For each username, 20 tries at once, then one every three seconds.
 - WebSocket connect: ten per minute for each user.
 - API: 60 requests per second for each user, for the default.
-- Read the client address from `r.RemoteAddr`, or from `X-Forwarded-For` only when the request comes from the proxy address.
+- Read the client address from `r.RemoteAddr`, or from the last `X-Forwarded-For` entry only when the peer is in the trusted proxy list.
 
 ## Cookie and header rules
 

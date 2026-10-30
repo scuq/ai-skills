@@ -6,6 +6,10 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- scuq-go-spa-stack: Login hardening rules from an active check of the showcase login. The password checks in flight are bounded, the client address comes from `X-Forwarded-For` only behind a trusted proxy, the username limit is looser than the address limit, and the API answers carry `Cache-Control: no-store` and `X-Frame-Options`. A table of login checks gives each request and its expected result, and the agent runs them after a change to the login.
+
 ## [0.7.0] - 2026-10-30
 
 ### Added

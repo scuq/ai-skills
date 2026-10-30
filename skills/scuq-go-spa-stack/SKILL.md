@@ -204,7 +204,10 @@ The application supports local login, OIDC, or both.
   Keep the `state` and the `nonce` in a short-lived cookie.
 - Authenticate the WebSocket at the upgrade with the session cookie.
   Do not put a token in the URL.
-- Rate limit the login routes by client address and by username.
+- Rate limit the login routes by client address and, with a looser limit, by username.
+- Bound the password checks in flight, because one argon2id check holds 64 MiB.
+- Trust `X-Forwarded-For` only from a configured proxy list.
+- Run the login checks of `reference/auth-security.md` after each change to the login.
 - `reference/auth-security.md` gives the flows and the code.
 
 ## 7. Security
@@ -213,7 +216,8 @@ The application supports local login, OIDC, or both.
   The two together are the CSRF defense.
 - Check the `Origin` header at the WebSocket upgrade against an allowlist.
   A missing `Origin` is a non-browser client, and it must have a valid session too.
-- Send these headers on every response: `Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`, and `Permissions-Policy`.
+- Send these headers on every response: `Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`, `Permissions-Policy`, and `X-Frame-Options: DENY`.
+- Send `Cache-Control: no-store` on every API, auth, and WebSocket answer.
 - The CSP uses `script-src 'nonce-...' 'strict-dynamic'`, `object-src 'none'`, `base-uri 'none'`, and `connect-src 'self'`.
   Do not use `unsafe-inline` or `unsafe-eval`.
 - Test a new CSP with `Content-Security-Policy-Report-Only` first.
@@ -367,6 +371,7 @@ Check every item before you finish.
 - Every response has the security headers, and the CSP has a nonce and no `unsafe-inline`.
 - `http.CrossOriginProtection` wraps every route.
 - The session cookie has `HttpOnly`, `Secure`, and `SameSite=Lax`.
+- The login checks of `reference/auth-security.md` pass.
 - The WebSocket upgrade checks the `Origin` and the session.
 - The listener runs on a dedicated connection, and the notification payload holds no row.
 - The hub closes a slow client instead of a block.
