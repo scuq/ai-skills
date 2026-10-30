@@ -6,6 +6,8 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-30
+
 ### Added
 
 - scuq-go-spa-stack: A skill with the technology stack and the rules for a single-page application with a Go server as one static binary. It covers WebSocket push from database changes, a suggested Svelte 5 client, modal dialogs, per-user settings, local login and OIDC, and security headers. A workstation profile suggests dockview, RevoGrid or SVAR DataGrid, and a command palette. Eight reference files hold the code.
