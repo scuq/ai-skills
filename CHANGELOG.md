@@ -8,7 +8,11 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- scuq-go-spa-stack: Login hardening rules from an active check of the showcase login. The password checks in flight are bounded, the client address comes from `X-Forwarded-For` only behind a trusted proxy, the username limit is looser than the address limit, and the API answers carry `Cache-Control: no-store` and `X-Frame-Options`. A table of login checks gives each request and its expected result, and the agent runs them after a change to the login.
+- scuq-go-spa-stack: Login hardening rules from an active check of the showcase login. The password checks in flight are bounded. The client address comes from `X-Forwarded-For` only behind a trusted proxy. The username limit is looser than the address limit. The API answers carry `Cache-Control: no-store` and `X-Frame-Options`. A table of login checks gives each request and its expected result, and the agent runs them after a change to the login.
+
+### Changed
+
+- scuq-go-spa-stack: The Go version floor is 1.27. The rule is to use the latest stable Go release, and to raise the `go` directive with each release. The `net/http` server stays at its defaults except the timeouts and the limits.
 
 ## [0.7.0] - 2026-10-30
 

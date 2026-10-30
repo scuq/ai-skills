@@ -10,6 +10,8 @@ The research for the first version of the skill is from October 2026.
 
 - Go 1.25 release notes, `http.CrossOriginProtection`, `testing/synctest`, `os.Root`: https://go.dev/doc/go1.25
 - Go 1.26 release notes, Green Tea garbage collector, `slog.NewMultiHandler`: https://go.dev/doc/go1.26
+- Go 1.27 release notes: https://go.dev/doc/go1.27
+- Go release history and the support policy for the two most recent minors: https://go.dev/doc/devel/release
 - `net/http` routing patterns: https://pkg.go.dev/net/http#hdr-Patterns-ServeMux
 - `http.CrossOriginProtection`: https://pkg.go.dev/net/http#CrossOriginProtection
 - A modern approach to preventing CSRF in Go: https://www.alexedwards.net/blog/preventing-csrf-in-go

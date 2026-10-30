@@ -5,7 +5,7 @@
 This file gives the code for the server of section 4 of the skill.
 It covers the start, the config, the middleware chain, the embedded client with a CSP nonce, the health routes, and the shutdown.
 Copy the parts, and change the names.
-Every snippet compiles with Go 1.26 and the standard library, except where the import names a module.
+Every snippet compiles with Go 1.27 and the standard library, except where the import names a module.
 
 ## Start and shutdown
 
@@ -109,6 +109,10 @@ func run(ctx context.Context, cfg config, log *slog.Logger) error {
 
 - `WriteTimeout` does not apply to a hijacked WebSocket connection.
   The WebSocket handler sets its own deadlines, see `realtime.md`.
+- Go sets no `Server` header.
+  A reverse proxy in front adds its own, so turn it off there.
+- The other server fields stay at their defaults, for example `MaxHeaderBytes`.
+  Change one only with a measurement that asks for it.
 - `BaseContext` gives every request the server context.
   A handler that starts work for the whole process watches this context.
 - Add `net` to the imports for `net.Listener`.

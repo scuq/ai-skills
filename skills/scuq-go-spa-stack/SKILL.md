@@ -41,7 +41,7 @@ An application uses one of three variants.
 
 | Component | Choice | Version floor | Reason |
 |---|---|---|---|
-| Language | Go | 1.26 | `http.CrossOriginProtection`, `testing/synctest`, and the Green Tea garbage collector |
+| Language | Go | 1.27 | The latest stable release, see the rule below |
 | Router | `net/http.ServeMux` | Go 1.22 patterns | Method and wildcard patterns, no dependency |
 | Static files | `embed` and `fs.Sub` | | One binary |
 | WebSocket | `github.com/coder/websocket` | 1.8 | Context-aware API, small, maintained |
@@ -57,14 +57,17 @@ An application uses one of three variants.
 | Logging | `log/slog` | | JSON output, no dependency |
 | Tracing | `go.opentelemetry.io/contrib/bridges/otelslog` | optional | Trace ids in the log records |
 
+- Always use the latest stable Go version, 1.27 or later.
+  Set the `go` directive in `go.mod` to it, and raise it with each Go release.
+  Go gives fixes to the two most recent minor versions only.
+- Keep the `net/http` server at its defaults.
+  Set only the timeouts, the body limits, and the WebSocket limits of sections 4 and 5, and change another default only with a measurement.
 - Use the standard library when it does the job.
 - Do not add an ORM or a web framework.
 - Do not add a dependency that needs cgo.
   Build with `CGO_ENABLED=0`, `-trimpath`, and `-ldflags "-s -w -X main.version=VERSION"`.
 - Do not use `encoding/json/v2` in a release build.
   It is still an experiment behind `GOEXPERIMENT=jsonv2`.
-- Follow the Go release policy.
-  The two most recent minor versions get fixes.
 - Section 4 and `reference/server.md` give the layout and the code.
 
 ## 3. The client stack
