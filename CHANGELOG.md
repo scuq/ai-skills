@@ -6,6 +6,8 @@ This project uses [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-30
+
 ### Added
 
 - scuq-hmi-semantics: Rule 3j separates a severity from an alert. Only a severity that the registry maps to an alert level uses an alert color.
